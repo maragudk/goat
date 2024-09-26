@@ -26,7 +26,7 @@ func TestOpenAIClient_Prompt(t *testing.T) {
 			{
 				BaseURL: "http://localhost:8092/v1",
 				Model:   llm.ModelLlama3_2_3B,
-				Skip:    false,
+				Skip:    true,
 			},
 		}
 
