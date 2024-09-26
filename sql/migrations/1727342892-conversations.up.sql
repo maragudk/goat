@@ -23,9 +23,9 @@ end;
 
 insert into models (id, name, type, config) values
   ('m_59ff15344d498ee0db983ad592340a81', 'human', 'brain', '{}'),
-  ('m_63b43696e14d6cc679420720c08209bb', 'llama3.1-8b', 'llamacpp', '{"address":"localhost:8090"}'),
-  ('m_f4bb1ef5a31597c08553f722f2c8ff6c', 'llama3.2-1b', 'llamacpp', '{"address":"localhost:8091"}'),
-  ('m_36bdc1152a0906b6dbde79eba7fb00e6', 'llama3.2-3b', 'llamacpp', '{"address":"localhost:8092"}'),
+  ('m_f4bb1ef5a31597c08553f722f2c8ff6c', 'llama3.2-1b', 'llamacpp', '{"address":"localhost:8090"}'),
+  ('m_36bdc1152a0906b6dbde79eba7fb00e6', 'llama3.2-3b', 'llamacpp', '{"address":"localhost:8091"}'),
+  ('m_63b43696e14d6cc679420720c08209bb', 'llama3.1-8b', 'llamacpp', '{"address":"localhost:8092"}'),
   ('m_218c6e1693ffd4bbd4fb59efcfd985ee', 'gpt-4o', 'openai', '{"token":"123"}');
 
 -- speakers are named models with an optional system prompt. Many speakers can use the same model.

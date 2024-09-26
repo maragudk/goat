@@ -19,12 +19,12 @@ func TestOpenAIClient_Prompt(t *testing.T) {
 			Token   string
 		}{
 			{
-				BaseURL: "http://localhost:8091/v1",
+				BaseURL: "http://localhost:8090/v1",
 				Model:   llm.ModelLlama3_2_1B,
 				Skip:    false,
 			},
 			{
-				BaseURL: "http://localhost:8092/v1",
+				BaseURL: "http://localhost:8091/v1",
 				Model:   llm.ModelLlama3_2_3B,
 				Skip:    false,
 			},
