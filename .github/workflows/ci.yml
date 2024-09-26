@@ -19,7 +19,7 @@ jobs:
 
     services:
       llama32-1b:
-        image: "maragudk/llama-3.2-1b-instruct-q8_0"
+        image: "maragudk/llama-3.2-1b-instruct-q5_k_m"
         ports:
           - 8091:8080
       llama32-3b:
