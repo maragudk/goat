@@ -18,14 +18,14 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      llama1b:
+      llama32-1b:
         image: "maragudk/llama-3.2-1b-instruct-q8_0"
         ports:
           - 8091:8080
-#      llama3b:
-#        image: "maragudk/llama-3.2-3b-instruct-q8_0"
-#        ports:
-#          - 8092:8080
+      llama32-3b:
+        image: "maragudk/llama-3.2-3b-instruct-q8_0"
+        ports:
+          - 8092:8080
 
     steps:
       - name: Checkout
