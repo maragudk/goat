@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/sashabaranov/go-openai"
@@ -117,7 +118,10 @@ func (c *OpenAIClient) Prompt(ctx context.Context, system string, messages []Mes
 			return err
 		}
 
-		if _, err := w.Write([]byte(res.Choices[0].Delta.Content)); err != nil {
+		content := res.Choices[0].Delta.Content
+		content = strings.ReplaceAll(content, "<|eot_id|>", "")
+
+		if _, err := w.Write([]byte(content)); err != nil {
 			return err
 		}
 	}
