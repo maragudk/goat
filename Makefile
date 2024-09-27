@@ -6,6 +6,10 @@ benchmark:
 cover:
 	go tool cover -html=cover.out
 
+.PHONY: down
+down:
+	docker compose down
+
 .PHONY: download
 download:
 	mkdir -p models
@@ -26,5 +30,4 @@ test:
 
 .PHONY: up
 up:
-	./models/Llama-3.2-1B-Instruct-Q5_K_M.llamafile --nobrowser -c 0 --port 8090 &
-	./models/Llama-3.2-3B-Instruct-Q5_K_M.llamafile --nobrowser -c 0 --port 8091 &
+	docker compose up -d
