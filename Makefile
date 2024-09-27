@@ -9,8 +9,8 @@ cover:
 .PHONY: download
 download:
 	mkdir -p models
-	cd models && curl -L -O -C - https://assets.maragu.dev/llm/Llama-3.2-1B-Instruct-Q8_0.llamafile
-	cd models && curl -L -O -C - https://assets.maragu.dev/llm/Llama-3.2-3B-Instruct-Q8_0.llamafile
+	cd models && curl -L -O -C - https://assets.maragu.dev/llm/Llama-3.2-1B-Instruct-Q5_K_M.llamafile
+	cd models && curl -L -O -C - https://assets.maragu.dev/llm/Llama-3.2-3B-Instruct-Q5_K_M.llamafile
 
 .PHONY: install
 install:
@@ -25,6 +25,6 @@ test:
 	go test -coverprofile=cover.out -shuffle on ./...
 
 .PHONY: up
-up: download
-	./models/Llama-3.2-1B-Instruct-Q8_0.llamafile --nobrowser --port 8091 &
-	./models/Llama-3.2-3B-Instruct-Q8_0.llamafile --nobrowser --port 8092 &
+up:
+	./models/Llama-3.2-1B-Instruct-Q5_K_M.llamafile --nobrowser -c 0 --port 8090 &
+	./models/Llama-3.2-3B-Instruct-Q5_K_M.llamafile --nobrowser -c 0 --port 8091 &

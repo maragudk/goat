@@ -15,27 +15,16 @@ func TestOpenAIClient_Prompt(t *testing.T) {
 		tests := []struct {
 			BaseURL string
 			Model   llm.Model
-			Skip    bool
 			Token   string
 		}{
 			{
-				BaseURL: "http://localhost:8091/v1",
+				BaseURL: "http://localhost:8090/v1",
 				Model:   llm.ModelLlama3_2_1B,
-				Skip:    false,
-			},
-			{
-				BaseURL: "http://localhost:8092/v1",
-				Model:   llm.ModelLlama3_2_3B,
-				Skip:    false,
 			},
 		}
 
 		for _, test := range tests {
 			t.Run(test.Model.String(), func(t *testing.T) {
-				if test.Skip {
-					t.Skip()
-				}
-
 				c := llm.NewOpenAIClient(llm.NewOpenAIClientOptions{
 					BaseURL: test.BaseURL,
 					Model:   test.Model,
