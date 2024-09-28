@@ -136,7 +136,6 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 		var b strings.Builder
 		multiW := io.MultiWriter(w, &b)
 		if err := client.Prompt(ctx, model.GlobalPrompt+llmSpeaker.System, messages, multiW); err != nil {
-			_, _ = fmt.Fprintln(multiW, "\n\nError:", err)
 			return err
 		}
 
