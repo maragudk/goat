@@ -56,6 +56,21 @@ func TestOpenAIClient_Prompt(t *testing.T) {
 				is.True(t, len(b.String()) > 0)
 				is.True(t, !strings.Contains(b.String(), "<|eot_id|>"))
 			})
+
+			t.Run("can use a system prompt", func(t *testing.T) {
+				m := llm.Message{
+					Content: "Just say hi.",
+					Name:    "Steve",
+					Role:    llm.MessageRoleUser,
+				}
+
+				var b strings.Builder
+				err := c.Prompt(context.Background(), "Always respond in Spanish with just the word 'hola'.", []llm.Message{m}, &b)
+				is.NotError(t, err)
+				is.True(t, len(b.String()) > 0)
+				t.Log(b.String())
+				is.True(t, strings.Contains(b.String(), "Hola."))
+			})
 		})
 	}
 }

@@ -71,11 +71,12 @@ type Message struct {
 }
 
 func (c *OpenAIClient) Prompt(ctx context.Context, system string, messages []Message, w io.Writer) error {
-	ccms := []openai.ChatCompletionMessage{
-		{
+	var ccms []openai.ChatCompletionMessage
+	if system != "" {
+		ccms = append(ccms, openai.ChatCompletionMessage{
 			Role:    openai.ChatMessageRoleSystem,
 			Content: system,
-		},
+		})
 	}
 
 	for _, m := range messages {
