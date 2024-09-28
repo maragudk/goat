@@ -2,41 +2,44 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
 
+	"maragu.dev/env"
 	"maragu.dev/errors"
-	"maragu.dev/snorkel"
 
 	"maragu.dev/goat/service"
 )
 
 func main() {
-	log := snorkel.New(snorkel.Options{})
-
-	if err := start(log); err != nil {
-		log.Event("Error starting", 1, "error", err)
+	if err := start(); err != nil {
+		_, _ = fmt.Fprintln(os.Stderr, "Error:", err)
 	}
 }
 
-func start(log *snorkel.Logger) error {
+func start() error {
+	_ = env.Load()
+
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	defer stop()
 
-	// Make a .goat directory in the user's home directory
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return errors.Wrap(err, "error getting home directory")
+	dir := env.GetStringOrDefault("GOAT_DIR", "")
+	if dir == "" {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return errors.Wrap(err, "error getting home directory")
+		}
+		dir = filepath.Join(home, ".goat")
 	}
-	goatDir := filepath.Join(home, ".goat")
-	if err := os.MkdirAll(goatDir, 0700); err != nil {
+	if err := os.MkdirAll(dir, 0700); err != nil {
 		return errors.Wrap(err, "error creating .goat directory")
 	}
 
 	s := service.New(service.NewOptions{
-		Path: goatDir,
+		Path: dir,
 	})
 	if err := s.Start(ctx, os.Stdin, os.Stdout); err != nil {
 		return err

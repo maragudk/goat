@@ -37,10 +37,7 @@ func NewDatabase(opts NewDatabaseOptions) *Database {
 }
 
 func (d *Database) Connect() error {
-	if err := d.h.Connect(); err != nil {
-		return err
-	}
-	return nil
+	return d.h.Connect()
 }
 
 //go:embed migrations

@@ -23,10 +23,8 @@ end;
 
 insert into models (id, name, type, config) values
   ('m_59ff15344d498ee0db983ad592340a81', 'human', 'brain', '{}'),
-  ('m_f4bb1ef5a31597c08553f722f2c8ff6c', 'llama3.2-1b', 'llamacpp', '{"address":"localhost:8090"}'),
-  ('m_36bdc1152a0906b6dbde79eba7fb00e6', 'llama3.2-3b', 'llamacpp', '{"address":"localhost:8091"}'),
-  ('m_63b43696e14d6cc679420720c08209bb', 'llama3.1-8b', 'llamacpp', '{"address":"localhost:8092"}'),
-  ('m_218c6e1693ffd4bbd4fb59efcfd985ee', 'gpt-4o', 'openai', '{"token":"123"}');
+  ('m_50981744360a6e19c18b053f53cc7301', 'llama3.2-1b', 'llamacpp', '{"address":"localhost:8090"}'),
+  ('m_7c063c75af9370705f165f4daf700f60', 'gpt-4o', 'openai', '{"token":"123"}');
 
 -- speakers are named models with an optional system prompt. Many speakers can use the same model.
 -- Think of these as roles for models.
@@ -45,12 +43,11 @@ end;
 
 create index speakers_name on speakers (name);
 
-insert into speakers (name, modelID) values
-  ('me', 'm_59ff15344d498ee0db983ad592340a81'),
-  ('llama3-1b', 'm_f4bb1ef5a31597c08553f722f2c8ff6c'),
-  ('llama3-3b', 'm_36bdc1152a0906b6dbde79eba7fb00e6'),
-  ('llama3-8b', 'm_63b43696e14d6cc679420720c08209bb'),
-  ('gpt4', 'm_218c6e1693ffd4bbd4fb59efcfd985ee');
+insert into speakers (id, name, modelID, system) values
+  ('s_26a91be1873f385bb0631ad868bf7c85', 'me', 'm_59ff15344d498ee0db983ad592340a81', 'You do you.'),
+  ('s_6a719774ed33fb3cd2b955f7eb36fc50', 'llama', 'm_50981744360a6e19c18b053f53cc7301', ''),
+  ('s_afe5f56180e339ee0fa08c0a84894fab', 'penguin', 'm_50981744360a6e19c18b053f53cc7301', 'You are a weird penguin.'),
+  ('s_196169d1616d094959b1f21212da6066', 'gpt', 'm_7c063c75af9370705f165f4daf700f60', '');
 
 -- conversations have optional topics and tie turns together.
 create table conversations (

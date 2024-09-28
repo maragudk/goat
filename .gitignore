@@ -1,4 +1,6 @@
 /*.log
+/.env
+/.goat/
 /cover.out
 /go.work
 /models/

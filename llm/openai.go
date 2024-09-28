@@ -58,6 +58,7 @@ type Model string
 const (
 	ModelLlama3_2_1B = Model("llama3.2-1b")
 	ModelLlama3_2_3B = Model("llama3.2-3b")
+	GPT4o            = Model("gpt-4o")
 )
 
 func (m Model) String() string {

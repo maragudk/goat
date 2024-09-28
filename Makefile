@@ -2,6 +2,10 @@
 benchmark:
 	go test -bench=.
 
+.PHONY: clean
+clean:
+	rm -rf .goat
+
 .PHONY: cover
 cover:
 	go tool cover -html=cover.out
