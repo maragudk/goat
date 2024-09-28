@@ -65,8 +65,6 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 	for scanner.Scan() {
 		text := scanner.Text()
 
-		_, _ = fmt.Fprintln(w)
-
 		turn, err := s.DB.SaveTurn(ctx, model.Turn{
 			ConversationID: conversation.ID,
 			SpeakerID:      model.MySpeakerID,
@@ -113,6 +111,8 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 			})
 			clients[speaker.ID] = client
 		}
+
+		_, _ = fmt.Fprintln(w)
 
 		var b strings.Builder
 		multiW := io.MultiWriter(w, &b)
