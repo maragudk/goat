@@ -24,6 +24,7 @@ end;
 insert into models (id, name, type, config) values
   ('m_59ff15344d498ee0db983ad592340a81', 'human', 'brain', '{}'),
   ('m_50981744360a6e19c18b053f53cc7301', 'llama3.2-1b', 'llamacpp', '{"address":"localhost:8090"}'),
+  ('m_bff0168b18e50745baed4d02a24d4b66', 'llama3.2-3b', 'llamacpp', '{"address":"localhost:8091"}'),
   ('m_7c063c75af9370705f165f4daf700f60', 'gpt-4o', 'openai', '{"token":"123"}');
 
 -- speakers are named models with an optional system prompt. Many speakers can use the same model.
@@ -47,6 +48,7 @@ insert into speakers (id, name, modelID, system) values
   ('s_26a91be1873f385bb0631ad868bf7c85', 'me', 'm_59ff15344d498ee0db983ad592340a81', 'You do you.'),
   ('s_6a719774ed33fb3cd2b955f7eb36fc50', 'llama', 'm_50981744360a6e19c18b053f53cc7301', ''),
   ('s_afe5f56180e339ee0fa08c0a84894fab', 'penguin', 'm_50981744360a6e19c18b053f53cc7301', 'You are a weird penguin.'),
+  ('s_7136eef88ec2628462b9b28c30327421', 'llama3b', 'm_bff0168b18e50745baed4d02a24d4b66', ''),
   ('s_196169d1616d094959b1f21212da6066', 'gpt', 'm_7c063c75af9370705f165f4daf700f60', '');
 
 -- conversations have optional topics and tie turns together.
