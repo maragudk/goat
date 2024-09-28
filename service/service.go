@@ -56,7 +56,6 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 		return errors.Wrap(err, "error creating conversation")
 	}
 
-	var messages []llm.Message
 	clients := map[model.ID]*llm.OpenAIClient{}
 
 	_, _ = fmt.Fprint(w, "> ")
@@ -74,12 +73,6 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 			return errors.Wrap(err, "error saving user turn")
 		}
 
-		messages = append(messages, llm.Message{
-			Content: turn.Content,
-			Name:    "Me",
-			Role:    llm.MessageRoleUser,
-		})
-
 		if !speakerNameMatcher.MatchString(text) {
 			fmt.Print("> ")
 
@@ -88,7 +81,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 
 		matches := speakerNameMatcher.FindStringSubmatch(turn.Content)
 		name := matches[1]
-		speaker, err := s.DB.GetSpeakerByName(ctx, name)
+		llmSpeaker, err := s.DB.GetSpeakerByName(ctx, name)
 		if err != nil {
 			if errors.Is(err, model.ErrorSpeakerNotFound) {
 				_, _ = fmt.Fprintf(w, "Error: No speaker called %v.\n\n> ", name)
@@ -97,9 +90,9 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 			return errors.Wrap(err, "error getting speaker by name")
 		}
 
-		client, ok := clients[speaker.ID]
+		client, ok := clients[llmSpeaker.ID]
 		if !ok {
-			m, err := s.DB.GetSpeakerModel(ctx, speaker.ID)
+			m, err := s.DB.GetSpeakerModel(ctx, llmSpeaker.ID)
 			if err != nil {
 				return errors.Wrap(err, "error getting speaker model")
 			}
@@ -109,15 +102,41 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 				Model:   llm.Model(m.Name),
 				Token:   m.Token(),
 			})
-			clients[speaker.ID] = client
+			clients[llmSpeaker.ID] = client
 		}
 
 		_, _ = fmt.Fprintln(w)
 
+		cd, err := s.DB.GetConversationDocument(ctx, conversation.ID)
+		if err != nil {
+			return errors.Wrap(err, "error getting conversation document")
+		}
+
+		var messages []llm.Message
+		for _, t := range cd.Turns {
+			s := cd.Speakers[t.SpeakerID]
+
+			prefix := ""
+			role := llm.MessageRoleUser
+
+			// If this is a turn from the current LLM, don't prefix the content with a name, and let the role be assistant
+			if s.ID == llmSpeaker.ID {
+				role = llm.MessageRoleAssistant
+			} else {
+				prefix = fmt.Sprintf("%v: ", s.Name)
+			}
+
+			messages = append(messages, llm.Message{
+				Content: prefix + t.Content,
+				Name:    s.Name,
+				Role:    role,
+			})
+		}
+
 		var b strings.Builder
 		multiW := io.MultiWriter(w, &b)
-		if err := client.Prompt(ctx, speaker.System, messages, multiW); err != nil {
-			_, _ = fmt.Fprintln(multiW, "\n\nError: ", err)
+		if err := client.Prompt(ctx, model.GlobalPrompt+llmSpeaker.System, messages, multiW); err != nil {
+			_, _ = fmt.Fprintln(multiW, "\n\nError:", err)
 			return err
 		}
 
@@ -126,18 +145,12 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 
 		turn, err = s.DB.SaveTurn(ctx, model.Turn{
 			ConversationID: conversation.ID,
-			SpeakerID:      speaker.ID,
+			SpeakerID:      llmSpeaker.ID,
 			Content:        b.String(),
 		})
 		if err != nil {
 			return errors.Wrap(err, "error saving model turn")
 		}
-
-		messages = append(messages, llm.Message{
-			Content: b.String(),
-			Name:    speaker.Name,
-			Role:    llm.MessageRoleAssistant,
-		})
 
 		fmt.Print("> ")
 	}

@@ -8,12 +8,45 @@ import (
 	"maragu.dev/errors"
 
 	"maragu.dev/goat/model"
+	goosql "maragu.dev/goo/sql"
 )
 
 func (d *Database) NewConversation(ctx context.Context) (model.Conversation, error) {
 	var c model.Conversation
 	err := d.h.Get(ctx, &c, "insert into conversations default values returning *")
 	return c, err
+}
+
+func (d *Database) GetConversationDocument(ctx context.Context, id model.ID) (model.ConversationDocument, error) {
+	var cd model.ConversationDocument
+	cd.Speakers = map[model.ID]model.Speaker{}
+
+	err := d.h.InTransaction(ctx, func(tx *goosql.Tx) error {
+		err := tx.Get(ctx, &cd.Conversation, `select * from conversations where id = ?`, id)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return model.ErrorConversationNotFound
+			}
+			return err
+		}
+		err = tx.Select(ctx, &cd.Turns, `select * from turns where conversationID = ? order by created`, id)
+		if err != nil {
+			return err
+		}
+		for _, t := range cd.Turns {
+			s, ok := cd.Speakers[t.SpeakerID]
+			if ok {
+				continue
+			}
+			err = tx.Get(ctx, &s, `select * from speakers where id = ?`, t.SpeakerID)
+			if err != nil {
+				return err
+			}
+			cd.Speakers[s.ID] = s
+		}
+		return nil
+	})
+	return cd, err
 }
 
 func (d *Database) SaveTurn(ctx context.Context, t model.Turn) (model.Turn, error) {

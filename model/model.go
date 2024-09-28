@@ -84,6 +84,12 @@ type Turn struct {
 	Content        string
 }
 
+type ConversationDocument struct {
+	Conversation Conversation
+	Speakers     map[ID]Speaker
+	Turns        []Turn
+}
+
 func unmarshalConfig(s string) map[string]string {
 	config := map[string]string{}
 	if err := json.Unmarshal([]byte(s), &config); err != nil {
