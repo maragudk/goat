@@ -17,4 +17,6 @@ require (
 require (
 	github.com/jmoiron/sqlx v1.4.0 // indirect
 	github.com/maragudk/goqite v0.2.3 // indirect
+	golang.org/x/crypto v0.25.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 )

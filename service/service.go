@@ -62,7 +62,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		if err != nil {
 			return errors.Wrap(err, "error getting latest conversation")
 		}
-		fmt.Println("Continuing conversation", conversation.ID)
+		_, _ = fmt.Fprintln(w, "Continuing conversation", conversation.ID)
 	} else {
 		conversation, err = s.DB.NewConversation(ctx)
 		if err != nil {
@@ -88,7 +88,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		}
 
 		if !speakerNameMatcher.MatchString(text) {
-			fmt.Print("> ")
+			_, _ = fmt.Fprint(w, "> ")
 
 			continue
 		}
@@ -153,9 +153,6 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			return err
 		}
 
-		_, _ = fmt.Fprintln(w)
-		_, _ = fmt.Fprintln(w)
-
 		turn, err = s.DB.SaveTurn(ctx, model.Turn{
 			ConversationID: conversation.ID,
 			SpeakerID:      llmSpeaker.ID,
@@ -165,7 +162,9 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			return errors.Wrap(err, "error saving model turn")
 		}
 
-		fmt.Print("> ")
+		_, _ = fmt.Fprintln(w)
+		_, _ = fmt.Fprintln(w)
+		_, _ = fmt.Fprint(w, "> ")
 	}
 	return nil
 }
