@@ -23,6 +23,7 @@ func main() {
 
 func start() error {
 	continueFlag := flag.Bool("c", false, "continue conversation")
+	promptFlag := flag.String("p", "", "use a one-off prompt instead of chatting")
 	helpFlag := flag.Bool("h", false, "show help")
 	flag.Parse()
 
@@ -54,6 +55,7 @@ func start() error {
 
 	opts := service.StartOptions{
 		Continue: *continueFlag,
+		Prompt:   *promptFlag,
 	}
 
 	if err := s.Start(ctx, os.Stdin, os.Stdout, opts); err != nil {

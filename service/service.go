@@ -44,6 +44,7 @@ var speakerNameMatcher = regexp.MustCompile(`\B@(?P<name>\w+)`)
 
 type StartOptions struct {
 	Continue bool
+	Prompt   string
 }
 
 func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts StartOptions) error {
@@ -53,6 +54,17 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 
 	if err := s.DB.MigrateUp(ctx); err != nil {
 		return errors.Wrap(err, "error migrating database")
+	}
+
+	interactive := true
+	if opts.Prompt != "" {
+		if !speakerNameMatcher.MatchString(opts.Prompt) {
+			return errors.New("no speaker mentioned in prompt")
+		}
+
+		interactive = false
+		opts.Continue = false
+		r = strings.NewReader(opts.Prompt)
 	}
 
 	var conversation model.Conversation
@@ -72,7 +84,9 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 
 	clients := map[model.ID]*llm.OpenAIClient{}
 
-	_, _ = fmt.Fprint(w, "> ")
+	if interactive {
+		_, _ = fmt.Fprint(w, "> ")
+	}
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -166,6 +180,11 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 
 		_, _ = fmt.Fprintln(w)
 		_, _ = fmt.Fprintln(w)
+
+		if !interactive {
+			break
+		}
+
 		_, _ = fmt.Fprint(w, "> ")
 	}
 	return nil
