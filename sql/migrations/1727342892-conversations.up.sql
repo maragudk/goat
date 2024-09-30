@@ -3,7 +3,7 @@ create table model_types (
   v text primary key
 ) strict;
 
-insert into model_types (v) values ('brain'), ('llamacpp'), ('openai'), ('anthropic');
+insert into model_types (v) values ('brain'), ('llamacpp'), ('openai'), ('anthropic'), ('groq');
 
 -- models are llms.
 -- They have names (how they're identified) and types (how they're communicated with),
@@ -26,6 +26,7 @@ insert into models (id, name, type, config) values
   ('m_50981744360a6e19c18b053f53cc7301', 'llama3.2-1b', 'llamacpp', '{"address":"localhost:8090"}'),
   ('m_bff0168b18e50745baed4d02a24d4b66', 'llama3.2-3b', 'llamacpp', '{"address":"localhost:8091"}'),
   ('m_32cba90058abc8856ee083461f859be4', 'llama3.1-8b', 'llamacpp', '{"address":"localhost:8092"}'),
+  ('m_908680bfa1a690fe805070534cc73bed', 'llama-3.1-70b-versatile', 'groq', '{"token":"123"}'),
   ('m_7c063c75af9370705f165f4daf700f60', 'gpt-4o', 'openai', '{"token":"123"}');
 
 -- speakers are named models with an optional system prompt. Many speakers can use the same model.
@@ -51,6 +52,7 @@ insert into speakers (id, name, modelID, system) values
   ('s_afe5f56180e339ee0fa08c0a84894fab', 'penguin', 'm_50981744360a6e19c18b053f53cc7301', 'You are a weird penguin.'),
   ('s_7136eef88ec2628462b9b28c30327421', 'llama3', 'm_bff0168b18e50745baed4d02a24d4b66', ''),
   ('s_60cdf7c9203bfb3ab62d9000ea8005e1', 'llama8', 'm_32cba90058abc8856ee083461f859be4', ''),
+  ('s_73763b5713a13b77cecf50c63066b3c5', 'llama70', 'm_908680bfa1a690fe805070534cc73bed', ''),
   ('s_196169d1616d094959b1f21212da6066', 'gpt', 'm_7c063c75af9370705f165f4daf700f60', '');
 
 -- conversations have optional topics and tie turns together.

@@ -22,6 +22,7 @@ const (
 	ModelTypeLlamaCPP  = ModelType("llamacpp")
 	ModelTypeOpenAI    = ModelType("openai")
 	ModelTypeAnthropic = ModelType("anthropic")
+	ModelTypeGroq      = ModelType("groq")
 )
 
 type Model struct {
@@ -41,6 +42,8 @@ func (m Model) URL() string {
 		return fmt.Sprintf("http://%v/v1", config["address"])
 	case ModelTypeOpenAI:
 		return ""
+	case ModelTypeGroq:
+		return "https://api.groq.com/openai/v1"
 	default:
 		panic("unsupported model type")
 	}
@@ -53,6 +56,8 @@ func (m Model) Token() string {
 	case ModelTypeLlamaCPP:
 		return ""
 	case ModelTypeOpenAI:
+		return config["token"]
+	case ModelTypeGroq:
 		return config["token"]
 	default:
 		panic("unsupported model type")
