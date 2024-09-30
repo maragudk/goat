@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -21,6 +22,15 @@ func main() {
 }
 
 func start() error {
+	continueFlag := flag.Bool("c", false, "continue conversation")
+	helpFlag := flag.Bool("h", false, "show help")
+	flag.Parse()
+
+	if *helpFlag {
+		flag.PrintDefaults()
+		return nil
+	}
+
 	_ = env.Load()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
@@ -41,7 +51,12 @@ func start() error {
 	s := service.New(service.NewOptions{
 		Path: dir,
 	})
-	if err := s.Start(ctx, os.Stdin, os.Stdout); err != nil {
+
+	opts := service.StartOptions{
+		Continue: *continueFlag,
+	}
+
+	if err := s.Start(ctx, os.Stdin, os.Stdout, opts); err != nil {
 		return err
 	}
 	return nil

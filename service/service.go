@@ -42,7 +42,11 @@ func New(opts NewOptions) *Service {
 // speakerNameMatcher matches speaker names. See https://regex101.com/r/QhwE8m/latest
 var speakerNameMatcher = regexp.MustCompile(`\B@(?P<name>\w+)`)
 
-func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
+type StartOptions struct {
+	Continue bool
+}
+
+func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts StartOptions) error {
 	if err := s.DB.Connect(); err != nil {
 		return errors.Wrap(err, "error connecting to database")
 	}
@@ -51,9 +55,19 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer) error {
 		return errors.Wrap(err, "error migrating database")
 	}
 
-	conversation, err := s.DB.NewConversation(ctx)
-	if err != nil {
-		return errors.Wrap(err, "error creating conversation")
+	var conversation model.Conversation
+	var err error
+	if opts.Continue {
+		conversation, err = s.DB.GetLatestConversation(ctx)
+		if err != nil {
+			return errors.Wrap(err, "error getting latest conversation")
+		}
+		fmt.Println("Continuing conversation", conversation.ID)
+	} else {
+		conversation, err = s.DB.NewConversation(ctx)
+		if err != nil {
+			return errors.Wrap(err, "error creating conversation")
+		}
 	}
 
 	clients := map[model.ID]*llm.OpenAIClient{}

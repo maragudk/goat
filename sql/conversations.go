@@ -17,6 +17,15 @@ func (d *Database) NewConversation(ctx context.Context) (model.Conversation, err
 	return c, err
 }
 
+func (d *Database) GetLatestConversation(ctx context.Context) (model.Conversation, error) {
+	var c model.Conversation
+	err := d.h.Get(ctx, &c, "select * from conversations order by created desc limit 1")
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return c, model.ErrorConversationNotFound
+	}
+	return c, err
+}
+
 func (d *Database) GetConversationDocument(ctx context.Context, id model.ID) (model.ConversationDocument, error) {
 	var cd model.ConversationDocument
 	cd.Speakers = map[model.ID]model.Speaker{}
