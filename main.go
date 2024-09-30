@@ -22,10 +22,11 @@ func main() {
 }
 
 func start() error {
-	continueFlag := flag.Bool("c", false, "continue conversation")
-	promptFlag := flag.String("p", "", "use a one-off prompt instead of chatting")
-	helpFlag := flag.Bool("h", false, "show help")
-	flag.Parse()
+	mainFlagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	continueFlag := mainFlagSet.Bool("c", false, "continue conversation")
+	promptFlag := mainFlagSet.String("p", "", "use a one-off prompt instead of chatting")
+	helpFlag := mainFlagSet.Bool("h", false, "show help")
+	_ = mainFlagSet.Parse(os.Args[1:])
 
 	if *helpFlag {
 		flag.PrintDefaults()
