@@ -149,7 +149,9 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 
 		var b strings.Builder
 		multiW := io.MultiWriter(w, &b)
-		if err := client.Prompt(ctx, model.GlobalPrompt+llmSpeaker.System, messages, multiW); err != nil {
+
+		prompt := model.CreateGlobalPrompt(llmSpeaker.Name) + llmSpeaker.System
+		if err := client.Prompt(ctx, prompt, messages, multiW); err != nil {
 			return err
 		}
 

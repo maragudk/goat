@@ -1,7 +1,11 @@
 package model
 
+import (
+	"fmt"
+)
+
 const (
-	GlobalPrompt = `You are an LLM assistant participating in a converation with multiple speakers.
+	globalPrompt = `You are an LLM assistant called %v participating in a converation with multiple speakers.
 Each speaker has its message prefixed with a name you can use to refer to the speaker.
 Do not prefix your answers with a name.
 
@@ -19,3 +23,7 @@ Someone saying hi to John with "Hi @john".
 
 `
 )
+
+func CreateGlobalPrompt(speakerName string) string {
+	return fmt.Sprintf(globalPrompt, speakerName)
+}
