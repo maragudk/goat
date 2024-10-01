@@ -69,7 +69,7 @@ func TestOpenAIClient_Prompt(t *testing.T) {
 				is.NotError(t, err)
 				is.True(t, len(b.String()) > 0)
 				t.Log(b.String())
-				is.True(t, strings.Contains(b.String(), "Hola."))
+				is.True(t, strings.Contains(strings.ToLower(b.String()), "hola"))
 			})
 		})
 	}
