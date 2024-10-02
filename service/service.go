@@ -48,14 +48,6 @@ type StartOptions struct {
 }
 
 func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts StartOptions) error {
-	if err := s.DB.Connect(); err != nil {
-		return errors.Wrap(err, "error connecting to database")
-	}
-
-	if err := s.DB.MigrateUp(ctx); err != nil {
-		return errors.Wrap(err, "error migrating database")
-	}
-
 	interactive := true
 	if opts.Prompt != "" {
 		if !speakerNameMatcher.MatchString(opts.Prompt) {
@@ -192,6 +184,28 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		}
 
 		_, _ = fmt.Fprint(w, "> ")
+	}
+	return nil
+}
+
+func (s *Service) PrintModels(ctx context.Context, w io.Writer) error {
+	models, err := s.DB.GetModels(ctx)
+	if err != nil {
+		return errors.Wrap(err, "error getting models")
+	}
+	for _, m := range models {
+		_, _ = fmt.Fprintf(w, "- %v (%v)\n", m.Name, m.Type)
+	}
+	return nil
+}
+
+func (s *Service) ConnectAndMigrate(ctx context.Context) error {
+	if err := s.DB.Connect(); err != nil {
+		return errors.Wrap(err, "error connecting to database")
+	}
+
+	if err := s.DB.MigrateUp(ctx); err != nil {
+		return errors.Wrap(err, "error migrating database")
 	}
 	return nil
 }

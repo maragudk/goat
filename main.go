@@ -22,17 +22,6 @@ func main() {
 }
 
 func start() error {
-	mainFlagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	continueFlag := mainFlagSet.Bool("c", false, "continue conversation")
-	promptFlag := mainFlagSet.String("p", "", "use a one-off prompt instead of chatting")
-	helpFlag := mainFlagSet.Bool("h", false, "show help")
-	_ = mainFlagSet.Parse(os.Args[1:])
-
-	if *helpFlag {
-		flag.PrintDefaults()
-		return nil
-	}
-
 	_ = env.Load()
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
@@ -53,6 +42,28 @@ func start() error {
 	s := service.New(service.NewOptions{
 		Path: dir,
 	})
+
+	if err := s.ConnectAndMigrate(ctx); err != nil {
+		return err
+	}
+
+	if len(os.Args[1:]) > 0 {
+		switch os.Args[1] {
+		case "models", "model":
+			return s.PrintModels(ctx, os.Stdout)
+		}
+	}
+
+	mainFlagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	continueFlag := mainFlagSet.Bool("c", false, "continue conversation")
+	promptFlag := mainFlagSet.String("p", "", "use a one-off prompt instead of chatting")
+	helpFlag := mainFlagSet.Bool("h", false, "show help")
+	_ = mainFlagSet.Parse(os.Args[1:])
+
+	if *helpFlag {
+		flag.PrintDefaults()
+		return nil
+	}
 
 	opts := service.StartOptions{
 		Continue: *continueFlag,

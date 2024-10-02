@@ -91,6 +91,12 @@ func (d *Database) GetSpeakerModel(ctx context.Context, speakerID model.ID) (mod
 	return m, err
 }
 
+func (d *Database) GetModels(ctx context.Context) ([]model.Model, error) {
+	var ms []model.Model
+	err := d.h.Select(ctx, &ms, "select * from models order by name")
+	return ms, err
+}
+
 func isForeignKeyConstraintError(err error, column string) bool {
 	// TODO figure out if we can check the column
 	var sqliteErr sqlite3.Error
