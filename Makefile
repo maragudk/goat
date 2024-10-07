@@ -10,6 +10,10 @@ clean:
 cover:
 	go tool cover -html=cover.out
 
+.PHONY: demo
+demo:
+	vhs demo.tape
+
 .PHONY: down
 down:
 	docker compose down

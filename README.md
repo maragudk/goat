@@ -10,4 +10,8 @@ goat the GOAT LLM CLI.
 go install maragu.dev/goat@latest
 ```
 
-Made in 🇩🇰 by [maragu](https://www.maragu.dk/), maker of [online Go courses](https://www.golang.dk/).
+Made with ✨sparkles✨ by [maragu](https://www.maragu.dev/).
+
+## Demo
+
+![demo.gif](docs/demo.gif)
