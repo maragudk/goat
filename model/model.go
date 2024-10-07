@@ -69,6 +69,7 @@ type Speaker struct {
 	ModelID ID `db:"modelID"`
 	Name    string
 	System  string
+	Avatar  string
 }
 
 type Conversation struct {

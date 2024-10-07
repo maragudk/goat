@@ -27,7 +27,8 @@ insert into models (id, name, type, config) values
   ('m_bff0168b18e50745baed4d02a24d4b66', 'llama3.2-3b', 'llamacpp', '{"address":"localhost:8091"}'),
   ('m_32cba90058abc8856ee083461f859be4', 'llama3.1-8b', 'llamacpp', '{"address":"localhost:8092"}'),
   ('m_908680bfa1a690fe805070534cc73bed', 'llama-3.1-70b-versatile', 'groq', '{"token":"123"}'),
-  ('m_7c063c75af9370705f165f4daf700f60', 'gpt-4o', 'openai', '{"token":"123"}');
+  ('m_7c063c75af9370705f165f4daf700f60', 'gpt-4o', 'openai', '{"token":"123"}'),
+  ('m_b2ac6559f08edb63d5db48231a7d7aae', 'claude-3-5-sonnet-20240620', 'anthropic', '{"token":"123"}');
 
 -- speakers are named models with an optional system prompt. Many speakers can use the same model.
 -- Think of these as roles for models.
@@ -36,6 +37,7 @@ create table speakers (
   created text not null default (strftime('%Y-%m-%dT%H:%M:%fZ')),
   updated text not null default (strftime('%Y-%m-%dT%H:%M:%fZ')),
   name text unique not null,
+  avatar text not null default '🤖',
   modelID text not null references models (id),
   system text not null default ''
 ) strict;
@@ -46,14 +48,14 @@ end;
 
 create index speakers_name on speakers (name);
 
-insert into speakers (id, name, modelID, system) values
-  ('s_26a91be1873f385bb0631ad868bf7c85', 'me', 'm_59ff15344d498ee0db983ad592340a81', 'You do you.'),
-  ('s_6a719774ed33fb3cd2b955f7eb36fc50', 'llama', 'm_50981744360a6e19c18b053f53cc7301', ''),
-  ('s_afe5f56180e339ee0fa08c0a84894fab', 'penguin', 'm_50981744360a6e19c18b053f53cc7301', 'You are a weird penguin.'),
-  ('s_7136eef88ec2628462b9b28c30327421', 'llama3', 'm_bff0168b18e50745baed4d02a24d4b66', ''),
-  ('s_60cdf7c9203bfb3ab62d9000ea8005e1', 'llama8', 'm_32cba90058abc8856ee083461f859be4', ''),
-  ('s_73763b5713a13b77cecf50c63066b3c5', 'llama70', 'm_908680bfa1a690fe805070534cc73bed', ''),
-  ('s_196169d1616d094959b1f21212da6066', 'gpt', 'm_7c063c75af9370705f165f4daf700f60', '');
+insert into speakers (id, name, avatar, modelID, system) values
+  ('s_26a91be1873f385bb0631ad868bf7c85', 'me', '🧑', 'm_59ff15344d498ee0db983ad592340a81', 'You do you.'),
+  ('s_6a719774ed33fb3cd2b955f7eb36fc50', 'llama1','🦙', 'm_50981744360a6e19c18b053f53cc7301', ''),
+  ('s_7136eef88ec2628462b9b28c30327421', 'llama3', '🦙', 'm_bff0168b18e50745baed4d02a24d4b66', ''),
+  ('s_60cdf7c9203bfb3ab62d9000ea8005e1', 'llama8', '🦙', 'm_32cba90058abc8856ee083461f859be4', ''),
+  ('s_73763b5713a13b77cecf50c63066b3c5', 'llama', '🦙', 'm_908680bfa1a690fe805070534cc73bed', ''),
+  ('s_196169d1616d094959b1f21212da6066', 'gpt', '🤖', 'm_7c063c75af9370705f165f4daf700f60', ''),
+  ('s_0f2981f8f63af40eae0042502f8fbef4', 'claude', '🧑‍🎨', 'm_b2ac6559f08edb63d5db48231a7d7aae', '');
 
 -- conversations have optional topics and tie turns together.
 create table conversations (

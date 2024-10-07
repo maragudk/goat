@@ -66,8 +66,13 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 	var conversation model.Conversation
 	clients := map[model.ID]prompter{}
 
+	mySpeaker, err := s.DB.GetSpeaker(ctx, model.MySpeakerID)
+	if err != nil {
+		return errors.Wrap(err, "error getting my speaker")
+	}
+
 	if interactive {
-		_, _ = fmt.Fprint(w, "> ")
+		printAvatar(w, mySpeaker.Avatar)
 	}
 
 	scanner := bufio.NewScanner(r)
@@ -108,7 +113,8 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		llmSpeaker, err := s.DB.GetSpeakerByName(ctx, name)
 		if err != nil {
 			if errors.Is(err, model.ErrorSpeakerNotFound) {
-				_, _ = fmt.Fprintf(w, "Error: No speaker called %v.\n\n> ", name)
+				_, _ = fmt.Fprintf(w, "Error: No speaker called %v.\n\n", name)
+				printAvatar(w, mySpeaker.Avatar)
 				continue
 			}
 			return errors.Wrap(err, "error getting speaker by name")
@@ -166,6 +172,8 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			})
 		}
 
+		_, _ = fmt.Fprint(w, llmSpeaker.Avatar+": ")
+
 		var b strings.Builder
 		multiW := io.MultiWriter(w, &b)
 
@@ -190,9 +198,13 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			break
 		}
 
-		_, _ = fmt.Fprint(w, "> ")
+		printAvatar(w, mySpeaker.Avatar)
 	}
 	return nil
+}
+
+func printAvatar(w io.Writer, avatar string) {
+	_, _ = fmt.Fprint(w, avatar+": ")
 }
 
 func (s *Service) PrintModels(ctx context.Context, w io.Writer) error {

@@ -91,6 +91,15 @@ func (d *Database) SaveTurn(ctx context.Context, t model.Turn) (model.Turn, erro
 	return t, err
 }
 
+func (d *Database) GetSpeaker(ctx context.Context, id model.ID) (model.Speaker, error) {
+	var s model.Speaker
+	err := d.h.Get(ctx, &s, "select * from speakers where id = ?", id)
+	if err != nil && errors.Is(err, sql.ErrNoRows) {
+		return s, model.ErrorSpeakerNotFound
+	}
+	return s, err
+}
+
 func (d *Database) GetSpeakerByName(ctx context.Context, name string) (model.Speaker, error) {
 	var s model.Speaker
 	err := d.h.Get(ctx, &s, "select * from speakers where name = ?", name)
