@@ -54,7 +54,7 @@ Set Width 1000
 Set Height 800
 Set WindowBar Colorful
 Set Margin 20
-Set MarginFill "#8a0707"
+Set MarginFill "#60FCF9"
 Set BorderRadius 10
 Set Theme "Dracula"
 

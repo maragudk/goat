@@ -6,9 +6,17 @@
 
 goat the GOAT LLM CLI.
 
+Chat with multiple LLMs at the same time, both locally and with online models.
+
 ```shell
 go install maragu.dev/goat@latest
 ```
+
+Supported LLMs:
+- Llama via [llama.cpp](https://github.com/ggerganov/llama.cpp)
+- Models from [OpenAI](https://openai.com)
+- Models from [Anthropic](https://www.anthropic.com)
+- Models from [Groq](https://groq.com)
 
 Made with ✨sparkles✨ by [maragu](https://www.maragu.dev/).
 
