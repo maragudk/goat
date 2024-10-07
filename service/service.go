@@ -74,10 +74,6 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 	for scanner.Scan() {
 		text := strings.TrimSpace(scanner.Text())
 
-		if text == "" {
-			continue
-		}
-
 		// Only initalize the conversation once we have some text
 		var err error
 		if conversation.ID == "" {
@@ -104,8 +100,6 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		}
 
 		if !speakerNameMatcher.MatchString(text) {
-			_, _ = fmt.Fprint(w, "> ")
-
 			continue
 		}
 

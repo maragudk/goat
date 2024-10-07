@@ -31,6 +31,30 @@ func TestDatabase_SaveTurn(t *testing.T) {
 		is.Equal(t, "Testing, testing.", turn.Content)
 	})
 
+	t.Run("updates the last turn if the speaker is the same", func(t *testing.T) {
+		db := newDB(t)
+
+		c, err := db.NewConversation(context.Background())
+		is.NotError(t, err)
+
+		turn1, err := db.SaveTurn(context.Background(), model.Turn{
+			ConversationID: c.ID,
+			SpeakerID:      model.MySpeakerID,
+			Content:        "Testing, testing.",
+		})
+		is.NotError(t, err)
+
+		turn2, err := db.SaveTurn(context.Background(), model.Turn{
+			ConversationID: c.ID,
+			SpeakerID:      model.MySpeakerID,
+			Content:        "Really.",
+		})
+		is.NotError(t, err)
+
+		is.Equal(t, turn1.ID, turn2.ID)
+		is.Equal(t, "Testing, testing.\nReally.", turn2.Content)
+	})
+
 	t.Run("errors if no such speaker", func(t *testing.T) {
 		t.Skip()
 		db := newDB(t)

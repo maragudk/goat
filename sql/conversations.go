@@ -59,18 +59,36 @@ func (d *Database) GetConversationDocument(ctx context.Context, id model.ID) (mo
 }
 
 func (d *Database) SaveTurn(ctx context.Context, t model.Turn) (model.Turn, error) {
-	query := "insert into turns (conversationID, speakerID, content) values (?, ?, ?) returning *"
-	if err := d.h.Get(ctx, &t, query, t.ConversationID, t.SpeakerID, t.Content); err != nil {
-		switch {
-		case isForeignKeyConstraintError(err, "conversationID"):
-			return t, model.ErrorConversationNotFound
-		case isForeignKeyConstraintError(err, "speakerID"):
-			return t, model.ErrorSpeakerNotFound
-		default:
-			return t, err
+	err := d.h.InTransaction(ctx, func(tx *goosql.Tx) error {
+		var lastSpeakerID model.ID
+		query := `select speakerID from turns where conversationID = ? order by created desc limit 1`
+		if err := tx.Get(ctx, &lastSpeakerID, query, t.ConversationID); err != nil && !errors.Is(err, sql.ErrNoRows) {
+			return err
 		}
-	}
-	return t, nil
+
+		if lastSpeakerID != t.SpeakerID {
+			query = "insert into turns (conversationID, speakerID, content) values (?, ?, ?) returning *"
+			if err := tx.Get(ctx, &t, query, t.ConversationID, t.SpeakerID, t.Content); err != nil {
+				switch {
+				case isForeignKeyConstraintError(err, "conversationID"):
+					return model.ErrorConversationNotFound
+				case isForeignKeyConstraintError(err, "speakerID"):
+					return model.ErrorSpeakerNotFound
+				default:
+					return err
+				}
+			}
+			return nil
+		}
+
+		query = `update turns set content = content || ? where id = (select id from turns where conversationID = ? order by created desc limit 1) returning *`
+		if err := tx.Get(ctx, &t, query, "\n"+t.Content, t.ConversationID); err != nil {
+			return err
+		}
+		return nil
+
+	})
+	return t, err
 }
 
 func (d *Database) GetSpeakerByName(ctx context.Context, name string) (model.Speaker, error) {
