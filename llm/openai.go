@@ -12,6 +12,12 @@ import (
 	"maragu.dev/snorkel"
 )
 
+const (
+	ModelLlama3_2_1B = Model("llama3.2-1b")
+	ModelLlama3_2_3B = Model("llama3.2-3b")
+	ModelGPT4o       = Model(openai.GPT4o)
+)
+
 type OpenAIClient struct {
 	client *openai.Client
 	log    *snorkel.Logger
@@ -41,34 +47,6 @@ func NewOpenAIClient(opts NewOpenAIClientOptions) *OpenAIClient {
 		log:    opts.Log,
 		model:  opts.Model,
 	}
-}
-
-type MessageRole string
-
-const (
-	MessageRoleSystem    = MessageRole(openai.ChatMessageRoleSystem)
-	MessageRoleUser      = MessageRole(openai.ChatMessageRoleUser)
-	MessageRoleAssistant = MessageRole(openai.ChatMessageRoleAssistant)
-	MessageRoleFunction  = MessageRole(openai.ChatMessageRoleFunction)
-	MessageRoleTool      = MessageRole(openai.ChatMessageRoleTool)
-)
-
-type Model string
-
-const (
-	ModelLlama3_2_1B = Model("llama3.2-1b")
-	ModelLlama3_2_3B = Model("llama3.2-3b")
-	GPT4o            = Model("gpt-4o")
-)
-
-func (m Model) String() string {
-	return string(m)
-}
-
-type Message struct {
-	Content string
-	Name    string
-	Role    MessageRole
 }
 
 func (c *OpenAIClient) Prompt(ctx context.Context, system string, messages []Message, w io.Writer) error {

@@ -1,5 +1,6 @@
 /*.log
 /.env
+/.env.test.local
 /.goat/
 /cover.out
 /go.work*

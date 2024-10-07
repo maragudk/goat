@@ -47,6 +47,10 @@ type StartOptions struct {
 	Prompt   string
 }
 
+type prompter interface {
+	Prompt(ctx context.Context, prompt string, messages []llm.Message, w io.Writer) error
+}
+
 func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts StartOptions) error {
 	interactive := true
 	if opts.Prompt != "" {
@@ -60,7 +64,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 	}
 
 	var conversation model.Conversation
-	clients := map[model.ID]*llm.OpenAIClient{}
+	clients := map[model.ID]prompter{}
 
 	if interactive {
 		_, _ = fmt.Fprint(w, "> ")
@@ -123,11 +127,20 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 				return errors.Wrap(err, "error getting speaker model")
 			}
 
-			client = llm.NewOpenAIClient(llm.NewOpenAIClientOptions{
-				BaseURL: m.URL(),
-				Model:   llm.Model(m.Name),
-				Token:   m.Token(),
-			})
+			switch m.Type {
+			case model.ModelTypeLlamaCPP, model.ModelTypeOpenAI, model.ModelTypeGroq:
+				client = llm.NewOpenAIClient(llm.NewOpenAIClientOptions{
+					BaseURL: m.URL(),
+					Model:   llm.Model(m.Name),
+					Token:   m.Token(),
+				})
+			case model.ModelTypeAnthropic:
+				client = llm.NewAnthropicClient(llm.NewAnthropicClientOptions{
+					Model: llm.Model(m.Name),
+					Token: m.Token(),
+				})
+			}
+
 			clients[llmSpeaker.ID] = client
 		}
 
