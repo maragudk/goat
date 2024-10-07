@@ -40,10 +40,10 @@ func (m Model) URL() string {
 	switch m.Type {
 	case ModelTypeLlamaCPP:
 		return fmt.Sprintf("http://%v/v1", config["address"])
-	case ModelTypeOpenAI:
-		return ""
 	case ModelTypeGroq:
 		return "https://api.groq.com/openai/v1"
+	case ModelTypeOpenAI, ModelTypeAnthropic:
+		return ""
 	default:
 		panic("unsupported model type")
 	}
@@ -55,9 +55,7 @@ func (m Model) Token() string {
 	switch m.Type {
 	case ModelTypeLlamaCPP:
 		return ""
-	case ModelTypeOpenAI:
-		return config["token"]
-	case ModelTypeGroq:
+	case ModelTypeOpenAI, ModelTypeGroq, ModelTypeAnthropic:
 		return config["token"]
 	default:
 		panic("unsupported model type")
