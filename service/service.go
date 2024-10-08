@@ -140,7 +140,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			}
 
 			switch m.Type {
-			case model.ModelTypeLlamaCPP, model.ModelTypeOpenAI, model.ModelTypeGroq:
+			case model.ModelTypeLlamaCPP, model.ModelTypeOpenAI, model.ModelTypeGroq, model.ModelTypeHuggingFace:
 				client = llm.NewOpenAIClient(llm.NewOpenAIClientOptions{
 					BaseURL: m.URL(),
 					Model:   llm.Model(m.Name),

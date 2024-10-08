@@ -72,7 +72,7 @@ func (c *OpenAIClient) Prompt(ctx context.Context, system string, messages []Mes
 		Stream:   true,
 	})
 	if err != nil {
-		return err
+		return errors.Wrap(err, "error creating openai chat completion stream")
 	}
 	defer func() {
 		_ = stream.Close()
@@ -92,10 +92,10 @@ func (c *OpenAIClient) Prompt(ctx context.Context, system string, messages []Mes
 					time.Sleep(time.Second)
 					continue
 				default:
-					return err
+					return errors.Wrap(err, "openai api error receiving chat completion stream")
 				}
 			}
-			return err
+			return errors.Wrap(err, "error receiving openai chat completion stream")
 		}
 
 		content := res.Choices[0].Delta.Content

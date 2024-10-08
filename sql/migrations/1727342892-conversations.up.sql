@@ -3,7 +3,7 @@ create table model_types (
   v text primary key
 ) strict;
 
-insert into model_types (v) values ('brain'), ('llamacpp'), ('openai'), ('anthropic'), ('groq');
+insert into model_types (v) values ('brain'), ('llamacpp'), ('openai'), ('anthropic'), ('groq'), ('huggingface');
 
 -- models are llms.
 -- They have names (how they're identified) and types (how they're communicated with),
@@ -28,7 +28,8 @@ insert into models (id, name, type, config) values
   ('m_32cba90058abc8856ee083461f859be4', 'llama3.1-8b', 'llamacpp', '{"address":"localhost:8092"}'),
   ('m_908680bfa1a690fe805070534cc73bed', 'llama-3.1-70b-versatile', 'groq', '{"token":"123"}'),
   ('m_7c063c75af9370705f165f4daf700f60', 'gpt-4o', 'openai', '{"token":"123"}'),
-  ('m_b2ac6559f08edb63d5db48231a7d7aae', 'claude-3-5-sonnet-20240620', 'anthropic', '{"token":"123"}');
+  ('m_b2ac6559f08edb63d5db48231a7d7aae', 'claude-3-5-sonnet-20240620', 'anthropic', '{"token":"123"}'),
+  ('m_7f439ec1580fcc145e388f117dc0897a', 'google/gemma-2-2b-it', 'huggingface', '{"token":"123"}');
 
 -- speakers are named models with an optional system prompt. Many speakers can use the same model.
 -- Think of these as roles for models.
@@ -55,7 +56,8 @@ insert into speakers (id, name, avatar, modelID, system) values
   ('s_60cdf7c9203bfb3ab62d9000ea8005e1', 'llama8', '🦙', 'm_32cba90058abc8856ee083461f859be4', ''),
   ('s_73763b5713a13b77cecf50c63066b3c5', 'llama', '🦙', 'm_908680bfa1a690fe805070534cc73bed', ''),
   ('s_196169d1616d094959b1f21212da6066', 'gpt', '🤖', 'm_7c063c75af9370705f165f4daf700f60', ''),
-  ('s_0f2981f8f63af40eae0042502f8fbef4', 'claude', '🧑‍🎨', 'm_b2ac6559f08edb63d5db48231a7d7aae', '');
+  ('s_0f2981f8f63af40eae0042502f8fbef4', 'claude', '🧑‍🎨', 'm_b2ac6559f08edb63d5db48231a7d7aae', ''),
+  ('s_b7b078c33569f1a1a7c393559a018981', 'gemma2', '🦠', 'm_7f439ec1580fcc145e388f117dc0897a', '');
 
 -- conversations have optional topics and tie turns together.
 create table conversations (
