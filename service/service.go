@@ -71,6 +71,25 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		return errors.Wrap(err, "error getting my speaker")
 	}
 
+	// If we're continuing a conversation, print the conversation so far
+	if opts.Continue {
+		conversation, err = s.DB.GetLatestConversation(ctx)
+		if err != nil {
+			return errors.Wrap(err, "error getting latest conversation")
+		}
+
+		cd, err := s.DB.GetConversationDocument(ctx, conversation.ID)
+		if err != nil {
+			return errors.Wrap(err, "error getting conversation document")
+		}
+		for _, t := range cd.Turns {
+			s := cd.Speakers[t.SpeakerID]
+			printAvatar(w, s.Avatar)
+			_, _ = fmt.Fprintln(w, t.Content)
+			printTurnSeparator(w)
+		}
+	}
+
 	if interactive {
 		printAvatar(w, mySpeaker.Avatar)
 	}
@@ -82,16 +101,9 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		// Only initalize the conversation once we have some text
 		var err error
 		if conversation.ID == "" {
-			if opts.Continue {
-				conversation, err = s.DB.GetLatestConversation(ctx)
-				if err != nil {
-					return errors.Wrap(err, "error getting latest conversation")
-				}
-			} else {
-				conversation, err = s.DB.NewConversation(ctx)
-				if err != nil {
-					return errors.Wrap(err, "error creating conversation")
-				}
+			conversation, err = s.DB.NewConversation(ctx)
+			if err != nil {
+				return errors.Wrap(err, "error creating conversation")
 			}
 		}
 
@@ -144,7 +156,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			clients[llmSpeaker.ID] = client
 		}
 
-		_, _ = fmt.Fprintln(w)
+		printTurnSeparator(w)
 
 		cd, err := s.DB.GetConversationDocument(ctx, conversation.ID)
 		if err != nil {
@@ -172,7 +184,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			})
 		}
 
-		_, _ = fmt.Fprint(w, llmSpeaker.Avatar+": ")
+		printAvatar(w, llmSpeaker.Avatar)
 
 		var b strings.Builder
 		multiW := io.MultiWriter(w, &b)
@@ -192,7 +204,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		}
 
 		_, _ = fmt.Fprintln(w)
-		_, _ = fmt.Fprintln(w)
+		printTurnSeparator(w)
 
 		if !interactive {
 			break
@@ -205,6 +217,12 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 
 func printAvatar(w io.Writer, avatar string) {
 	_, _ = fmt.Fprint(w, avatar+": ")
+}
+
+func printTurnSeparator(w io.Writer) {
+	_, _ = fmt.Fprintln(w)
+	_, _ = fmt.Fprintln(w)
+	_, _ = fmt.Fprintln(w)
 }
 
 func (s *Service) PrintModels(ctx context.Context, w io.Writer) error {
