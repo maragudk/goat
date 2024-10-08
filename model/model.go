@@ -46,7 +46,7 @@ func (m Model) URL() string {
 	case ModelTypeOpenAI, ModelTypeAnthropic:
 		return ""
 	case ModelTypeHuggingFace:
-		return "https://api-inference.huggingface.co/models/" + m.Name
+		return "https://api-inference.huggingface.co/models/" + m.Name + "/v1"
 	default:
 		panic("unsupported model type")
 	}
