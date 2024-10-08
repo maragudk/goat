@@ -3,6 +3,7 @@ package llm
 import (
 	"context"
 	"io"
+	"strings"
 
 	"github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
@@ -41,11 +42,22 @@ func NewAnthropicClient(opts NewAnthropicClientOptions) *AnthropicClient {
 func (c *AnthropicClient) Prompt(ctx context.Context, system string, messages []Message, w io.Writer) error {
 	var mps []anthropic.MessageParam
 
-	for _, m := range messages {
+	var content string
+	for i, m := range messages {
 		switch m.Role {
 		case MessageRoleUser:
-			mps = append(mps, anthropic.NewUserMessage(anthropic.NewTextBlock(m.Name+": "+m.Content)))
+			content += m.Name + ": " + m.Content + "\n\n"
+
+			// If the next message is also a user message, don't send this one yet
+			if i+1 < len(messages) && messages[i+1].Role == MessageRoleUser {
+				continue
+			}
+
+			content = strings.TrimSpace(content)
+
+			mps = append(mps, anthropic.NewUserMessage(anthropic.NewTextBlock(content)))
 		case MessageRoleAssistant:
+			content = ""
 			mps = append(mps, anthropic.NewAssistantMessage(anthropic.NewTextBlock(m.Content)))
 		}
 	}

@@ -61,6 +61,27 @@ func TestAnthropicClient_Prompt(t *testing.T) {
 				t.Log(b.String())
 				is.True(t, strings.Contains(strings.ToLower(b.String()), "hola"))
 			})
+
+			t.Run("can send two user messages in a row", func(t *testing.T) {
+				messages := []llm.Message{
+					{
+						Content: "Hi",
+						Name:    "Steve",
+						Role:    llm.MessageRoleUser,
+					},
+					{
+						Content: "Hello",
+						Name:    "Ayvin",
+						Role:    llm.MessageRoleUser,
+					},
+				}
+
+				var b strings.Builder
+				err := c.Prompt(context.Background(), "Say hi to the participants in the conversation.", messages, &b)
+				is.NotError(t, err)
+				is.True(t, len(b.String()) > 0)
+				t.Log(b.String())
+			})
 		})
 	}
 }
