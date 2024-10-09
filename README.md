@@ -8,6 +8,8 @@ goat the GOAT LLM CLI.
 
 Chat with multiple LLMs at the same time, both locally and with online models.
 
+⚠️ Under heavy development, things will break.
+
 ```shell
 go install maragu.dev/goat@latest
 ```
