@@ -18,11 +18,12 @@ type Time = goomodel.Time
 type ModelType string
 
 const (
-	ModelTypeBrain     = ModelType("brain")
-	ModelTypeLlamaCPP  = ModelType("llamacpp")
-	ModelTypeOpenAI    = ModelType("openai")
-	ModelTypeAnthropic = ModelType("anthropic")
-	ModelTypeGroq      = ModelType("groq")
+	ModelTypeBrain       = ModelType("brain")
+	ModelTypeLlamaCPP    = ModelType("llamacpp")
+	ModelTypeOpenAI      = ModelType("openai")
+	ModelTypeAnthropic   = ModelType("anthropic")
+	ModelTypeGroq        = ModelType("groq")
+	ModelTypeHuggingFace = ModelType("huggingface")
 )
 
 type Model struct {
@@ -44,6 +45,8 @@ func (m Model) URL() string {
 		return "https://api.groq.com/openai/v1"
 	case ModelTypeOpenAI, ModelTypeAnthropic:
 		return ""
+	case ModelTypeHuggingFace:
+		return "https://api-inference.huggingface.co/models/" + m.Name + "/v1"
 	default:
 		panic("unsupported model type")
 	}
@@ -55,7 +58,7 @@ func (m Model) Token() string {
 	switch m.Type {
 	case ModelTypeLlamaCPP:
 		return ""
-	case ModelTypeOpenAI, ModelTypeGroq, ModelTypeAnthropic:
+	case ModelTypeOpenAI, ModelTypeGroq, ModelTypeAnthropic, ModelTypeHuggingFace:
 		return config["token"]
 	default:
 		panic("unsupported model type")
