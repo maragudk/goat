@@ -19,6 +19,7 @@ Supported LLMs:
 - Models from [OpenAI](https://openai.com)
 - Models from [Anthropic](https://www.anthropic.com)
 - Models from [Groq](https://groq.com)
+- Models from [HuggingFace](https://huggingface.co)
 
 Made with ✨sparkles✨ by [maragu](https://www.maragu.dev/).
 
