@@ -1,14 +1,11 @@
 package main
 
 import (
-	"context"
 	"flag"
-	"fmt"
 	"os"
-	"os/signal"
 	"path/filepath"
-	"syscall"
 
+	"maragu.dev/clir"
 	"maragu.dev/env"
 	"maragu.dev/errors"
 
@@ -16,62 +13,66 @@ import (
 )
 
 func main() {
-	if err := start(); err != nil {
-		_, _ = fmt.Fprintln(os.Stderr, "Error:", err)
+	clir.Run(clir.RunnerFunc(func(ctx clir.Context) error {
+		_ = env.Load()
+
+		dir := env.GetStringOrDefault("GOAT_DIR", "")
+		if dir == "" {
+			home, err := os.UserHomeDir()
+			if err != nil {
+				return errors.Wrap(err, "error getting home directory")
+			}
+			dir = filepath.Join(home, ".goat")
+		}
+		if err := os.MkdirAll(dir, 0700); err != nil {
+			return errors.Wrap(err, "error creating .goat directory")
+		}
+
+		s := service.New(service.NewOptions{
+			Path: dir,
+		})
+
+		if err := s.ConnectAndMigrate(ctx.Ctx); err != nil {
+			return err
+		}
+
+		// TODO move the flags inside the route once the router supports it
+		flagSet := flag.NewFlagSet("goat", flag.ExitOnError)
+		flagSet.SetOutput(ctx.Err)
+
+		continueFlag := flagSet.Bool("c", false, "continue conversation")
+		promptFlag := flagSet.String("p", "", "use a one-off prompt instead of chatting")
+
+		_ = flagSet.Parse(ctx.Args)
+
+		opts := service.StartOptions{
+			Continue: *continueFlag,
+			Prompt:   *promptFlag,
+		}
+
+		r := clir.NewRouter()
+
+		r.Route("", root(s, opts))
+
+		r.Branch("models", func(r *clir.Router) {
+			r.Route("", models(s))
+		})
+
+		ctx.Args = flagSet.Args()
+
+		return r.Run(ctx)
+	}))
+}
+
+func root(s *service.Service, opts service.StartOptions) clir.RunnerFunc {
+	return func(ctx clir.Context) error {
+
+		return s.Start(ctx.Ctx, ctx.In, ctx.Out, opts)
 	}
 }
 
-func start() error {
-	_ = env.Load()
-
-	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
-	defer stop()
-
-	dir := env.GetStringOrDefault("GOAT_DIR", "")
-	if dir == "" {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return errors.Wrap(err, "error getting home directory")
-		}
-		dir = filepath.Join(home, ".goat")
+func models(s *service.Service) clir.RunnerFunc {
+	return func(ctx clir.Context) error {
+		return s.PrintModels(ctx.Ctx, ctx.Out)
 	}
-	if err := os.MkdirAll(dir, 0700); err != nil {
-		return errors.Wrap(err, "error creating .goat directory")
-	}
-
-	s := service.New(service.NewOptions{
-		Path: dir,
-	})
-
-	if err := s.ConnectAndMigrate(ctx); err != nil {
-		return err
-	}
-
-	if len(os.Args[1:]) > 0 {
-		switch os.Args[1] {
-		case "models", "model":
-			return s.PrintModels(ctx, os.Stdout)
-		}
-	}
-
-	mainFlagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	continueFlag := mainFlagSet.Bool("c", false, "continue conversation")
-	promptFlag := mainFlagSet.String("p", "", "use a one-off prompt instead of chatting")
-	helpFlag := mainFlagSet.Bool("h", false, "show help")
-	_ = mainFlagSet.Parse(os.Args[1:])
-
-	if *helpFlag {
-		flag.PrintDefaults()
-		return nil
-	}
-
-	opts := service.StartOptions{
-		Continue: *continueFlag,
-		Prompt:   *promptFlag,
-	}
-
-	if err := s.Start(ctx, os.Stdin, os.Stdout, opts); err != nil {
-		return err
-	}
-	return nil
 }

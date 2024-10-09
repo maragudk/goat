@@ -7,6 +7,7 @@ require (
 	github.com/maragudk/is v0.1.0
 	github.com/mattn/go-sqlite3 v1.14.23
 	github.com/sashabaranov/go-openai v1.30.3
+	maragu.dev/clir v0.0.0-20241009111049-9c996d91642e
 	maragu.dev/env v0.2.0
 	maragu.dev/errors v0.3.0
 	maragu.dev/goo v0.0.0-20240920184707-85c3f4181eaf
