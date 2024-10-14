@@ -55,3 +55,8 @@ func (d *Database) MigrateUp(ctx context.Context) error {
 
 	return nil
 }
+
+// InjectSQLHelper into the database from the framework.
+func (d *Database) InjectSQLHelper(h *sql.Helper) {
+	d.h = h
+}

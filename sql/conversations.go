@@ -58,6 +58,22 @@ func (d *Database) GetConversationDocument(ctx context.Context, id model.ID) (mo
 	return cd, err
 }
 
+func (d *Database) GetConversationDocuments(ctx context.Context) ([]model.ConversationDocument, error) {
+	var ids []model.ID
+	var cds []model.ConversationDocument
+	if err := d.h.Select(ctx, &ids, "select id from conversations order by created desc"); err != nil {
+		return nil, err
+	}
+	for _, id := range ids {
+		cd, err := d.GetConversationDocument(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		cds = append(cds, cd)
+	}
+	return cds, nil
+}
+
 func (d *Database) SaveTurn(ctx context.Context, t model.Turn) (model.Turn, error) {
 	err := d.h.InTransaction(ctx, func(tx *goosql.Tx) error {
 		var lastSpeakerID model.ID

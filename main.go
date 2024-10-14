@@ -64,15 +64,26 @@ func main() {
 			r.Route("list", speakers(s))
 		})
 
+		r.Route("serve", serve(s, dir))
+
 		ctx.Args = flagSet.Args()
 
 		return r.Run(ctx)
 	}))
 }
 
+func serve(s *service.Service, dir string) clir.RunnerFunc {
+	return func(ctx clir.Context) error {
+		if err := os.Setenv("DATABASE_PATH", filepath.Join(dir, "goat.db")); err != nil {
+			return errors.Wrap(err, "error setting DATABASE_PATH")
+		}
+		s.Serve(ctx.Ctx, s.DB, ctx.Err)
+		return nil
+	}
+}
+
 func root(s *service.Service, opts service.StartOptions) clir.RunnerFunc {
 	return func(ctx clir.Context) error {
-
 		return s.Start(ctx.Ctx, ctx.In, ctx.Out, opts)
 	}
 }
