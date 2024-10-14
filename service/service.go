@@ -156,7 +156,9 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			clients[llmSpeaker.ID] = client
 		}
 
-		printTurnSeparator(w)
+		if interactive {
+			printTurnSeparator(w)
+		}
 
 		cd, err := s.DB.GetConversationDocument(ctx, conversation.ID)
 		if err != nil {
@@ -204,7 +206,10 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		}
 
 		_, _ = fmt.Fprintln(w)
-		printTurnSeparator(w)
+
+		if interactive {
+			printTurnSeparator(w)
+		}
 
 		if !interactive {
 			break
