@@ -109,6 +109,16 @@ func (d *Database) GetSpeakerByName(ctx context.Context, name string) (model.Spe
 	return s, err
 }
 
+func (d *Database) GetSpeakers(ctx context.Context) ([]model.SpeakerModelPair, error) {
+	var ss []model.SpeakerModelPair
+	query := `
+		select speakers.*, models.name as ModelName from speakers
+			join models on models.id = speakers.modelID
+		order by speakers.name`
+	err := d.h.Select(ctx, &ss, query)
+	return ss, err
+}
+
 func (d *Database) GetSpeakerModel(ctx context.Context, speakerID model.ID) (model.Model, error) {
 	var m model.Model
 	err := d.h.Get(ctx, &m, "select * from models where id = (select modelID from speakers where id = ?)", speakerID)

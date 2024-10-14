@@ -75,6 +75,11 @@ type Speaker struct {
 	Avatar  string
 }
 
+type SpeakerModelPair struct {
+	Speaker
+	ModelName string `db:"ModelName"`
+}
+
 type Conversation struct {
 	ID      ID
 	Created Time
