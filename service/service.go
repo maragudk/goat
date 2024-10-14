@@ -48,7 +48,7 @@ type StartOptions struct {
 }
 
 type prompter interface {
-	Prompt(ctx context.Context, prompt string, messages []llm.Message, w io.Writer) error
+	Prompt(ctx context.Context, system string, messages []llm.Message, w io.Writer) error
 }
 
 func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts StartOptions) error {
@@ -93,6 +93,8 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 	if interactive {
 		printAvatar(w, mySpeaker.Avatar)
 	}
+
+	var summarizer prompter
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -154,6 +156,10 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			}
 
 			clients[llmSpeaker.ID] = client
+
+			if summarizer == nil {
+				summarizer = client
+			}
 		}
 
 		if interactive {
@@ -206,6 +212,23 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		}
 
 		_, _ = fmt.Fprintln(w)
+
+		if cd.Conversation.Topic == "" && summarizer != nil {
+			messages = append(messages, llm.Message{
+				Content: b.String(),
+				Name:    llmSpeaker.Name,
+				Role:    llm.MessageRoleAssistant,
+			})
+
+			var summary strings.Builder
+			if err := summarizer.Prompt(ctx, "Give a short one-sentence summary of the conversation.", messages, &summary); err != nil {
+				return errors.Wrap(err, "error summarizing conversation")
+			}
+
+			if err := s.DB.SaveTopic(ctx, conversation.ID, summary.String()); err != nil {
+				return errors.Wrap(err, "error saving conversation topic")
+			}
+		}
 
 		if interactive {
 			printTurnSeparator(w)

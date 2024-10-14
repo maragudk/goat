@@ -12,9 +12,16 @@ import (
 )
 
 func ConversationPage(props html.PageProps, cd model.ConversationDocument) Node {
+	title := cd.Conversation.Topic
+	if title == "" {
+		title = cd.Conversation.ID.String()
+	}
+
+	props.Title = title
+
 	return Page(props,
 		Div(
-			H1(Text(cd.Conversation.ID.String())),
+			H1(Text(title)),
 
 			Div(Class("space-y-8"),
 				Map(cd.Turns, func(t model.Turn) Node {

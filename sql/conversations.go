@@ -107,6 +107,10 @@ func (d *Database) SaveTurn(ctx context.Context, t model.Turn) (model.Turn, erro
 	return t, err
 }
 
+func (d *Database) SaveTopic(ctx context.Context, id model.ID, topic string) error {
+	return d.h.Exec(ctx, "update conversations set topic = ? where id = ?", topic, id)
+}
+
 func (d *Database) GetSpeaker(ctx context.Context, id model.ID) (model.Speaker, error) {
 	var s model.Speaker
 	err := d.h.Get(ctx, &s, "select * from speakers where id = ?", id)
