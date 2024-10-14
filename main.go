@@ -56,6 +56,12 @@ func main() {
 
 		r.Branch("models", func(r *clir.Router) {
 			r.Route("", models(s))
+			r.Route("list", models(s))
+		})
+
+		r.Branch("speakers", func(r *clir.Router) {
+			r.Route("", speakers(s))
+			r.Route("list", speakers(s))
 		})
 
 		ctx.Args = flagSet.Args()
@@ -74,5 +80,11 @@ func root(s *service.Service, opts service.StartOptions) clir.RunnerFunc {
 func models(s *service.Service) clir.RunnerFunc {
 	return func(ctx clir.Context) error {
 		return s.PrintModels(ctx.Ctx, ctx.Out)
+	}
+}
+
+func speakers(s *service.Service) clir.RunnerFunc {
+	return func(ctx clir.Context) error {
+		return s.PrintSpeakers(ctx.Ctx, ctx.Out)
 	}
 }

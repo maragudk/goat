@@ -241,6 +241,20 @@ func (s *Service) PrintModels(ctx context.Context, w io.Writer) error {
 	return nil
 }
 
+func (s *Service) PrintSpeakers(ctx context.Context, out io.Writer) error {
+	speakers, err := s.DB.GetSpeakers(ctx)
+	if err != nil {
+		return errors.Wrap(err, "error getting speakers")
+	}
+	for _, s := range speakers {
+		_, _ = fmt.Fprintf(out, "- %v (%v)\n", s.Name, s.ModelName)
+		if s.System != "" {
+			_, _ = fmt.Fprintf(out, "  system: \"%v\"\n", s.System)
+		}
+	}
+	return nil
+}
+
 func (s *Service) ConnectAndMigrate(ctx context.Context) error {
 	if err := s.DB.Connect(); err != nil {
 		return errors.Wrap(err, "error connecting to database")

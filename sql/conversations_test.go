@@ -105,6 +105,18 @@ func TestDatabase_GetSpeakerModel(t *testing.T) {
 	})
 }
 
+func TestDatabase_GetSpeakers(t *testing.T) {
+	t.Run("gets speakers and their model names", func(t *testing.T) {
+		db := newDB(t)
+
+		ss, err := db.GetSpeakers(context.Background())
+		is.NotError(t, err)
+		is.Equal(t, 8, len(ss))
+		is.Equal(t, "claude", ss[0].Name)
+		is.Equal(t, "claude-3-5-sonnet-20240620", ss[0].ModelName)
+	})
+}
+
 func newDB(t *testing.T) *sql.Database {
 	t.Helper()
 
