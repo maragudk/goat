@@ -64,12 +64,22 @@ func main() {
 			r.Route("list", speakers(s))
 		})
 
+		r.Branch("topics", func(r *clir.Router) {
+			r.Route("recompute", recomputeTopics(s))
+		})
+
 		r.Route("serve", serve(s, dir))
 
 		ctx.Args = flagSet.Args()
 
 		return r.Run(ctx)
 	}))
+}
+
+func recomputeTopics(s *service.Service) clir.RunnerFunc {
+	return func(ctx clir.Context) error {
+		return s.RecomputeTopics(ctx.Ctx, ctx.Out)
+	}
 }
 
 func serve(s *service.Service, dir string) clir.RunnerFunc {

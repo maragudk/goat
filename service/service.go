@@ -141,19 +141,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 				return errors.Wrap(err, "error getting speaker model")
 			}
 
-			switch m.Type {
-			case model.ModelTypeLlamaCPP, model.ModelTypeOpenAI, model.ModelTypeGroq, model.ModelTypeHuggingFace:
-				client = llm.NewOpenAIClient(llm.NewOpenAIClientOptions{
-					BaseURL: m.URL(),
-					Model:   llm.Model(m.Name),
-					Token:   m.Token(),
-				})
-			case model.ModelTypeAnthropic:
-				client = llm.NewAnthropicClient(llm.NewAnthropicClientOptions{
-					Model: llm.Model(m.Name),
-					Token: m.Token(),
-				})
-			}
+			client = newClientFromModel(m)
 
 			clients[llmSpeaker.ID] = client
 
@@ -243,6 +231,24 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 	return nil
 }
 
+func newClientFromModel(m model.Model) prompter {
+	var client prompter
+	switch m.Type {
+	case model.ModelTypeLlamaCPP, model.ModelTypeOpenAI, model.ModelTypeGroq, model.ModelTypeHuggingFace:
+		client = llm.NewOpenAIClient(llm.NewOpenAIClientOptions{
+			BaseURL: m.URL(),
+			Model:   llm.Model(m.Name),
+			Token:   m.Token(),
+		})
+	case model.ModelTypeAnthropic:
+		client = llm.NewAnthropicClient(llm.NewAnthropicClientOptions{
+			Model: llm.Model(m.Name),
+			Token: m.Token(),
+		})
+	}
+	return client
+}
+
 func printAvatar(w io.Writer, avatar string) {
 	_, _ = fmt.Fprint(w, avatar+": ")
 }
@@ -286,5 +292,61 @@ func (s *Service) ConnectAndMigrate(ctx context.Context) error {
 	if err := s.DB.MigrateUp(ctx); err != nil {
 		return errors.Wrap(err, "error migrating database")
 	}
+	return nil
+}
+
+func (s *Service) RecomputeTopics(ctx context.Context, out io.Writer) error {
+	models, err := s.DB.GetModels(ctx)
+	if err != nil {
+		return errors.Wrap(err, "error getting models")
+	}
+
+	var client prompter
+	for _, m := range models {
+		if m.Type == model.ModelTypeBrain || (m.Type != model.ModelTypeAnthropic && m.Type != model.ModelTypeOpenAI) {
+			continue
+		}
+
+		_, _ = fmt.Fprintln(out, "Using model:", m.Name)
+		client = newClientFromModel(m)
+		break
+	}
+
+	if client == nil {
+		return errors.New("no models available to recompute topics")
+	}
+
+	cds, err := s.DB.GetConversationDocuments(ctx)
+	if err != nil {
+		return errors.Wrap(err, "error getting conversation documents")
+	}
+	for _, cd := range cds {
+		if cd.Conversation.Topic != "" {
+			continue
+		}
+
+		var messages []llm.Message
+		for _, t := range cd.Turns {
+			speaker := cd.Speakers[t.SpeakerID]
+
+			messages = append(messages, llm.Message{
+				Content: speaker.Name + ": " + t.Content,
+				Name:    speaker.Name,
+				Role:    llm.MessageRoleUser,
+			})
+		}
+
+		var b strings.Builder
+		if err := client.Prompt(ctx, model.CreateSummarizerPrompt("Summarizer"), messages, &b); err != nil {
+			return errors.Wrap(err, "error summarizing conversation")
+		}
+
+		if err := s.DB.SaveTopic(ctx, cd.Conversation.ID, b.String()); err != nil {
+			return errors.Wrap(err, "error saving conversation topic")
+		}
+
+		_, _ = fmt.Fprintf(out, `Recomputed topic for conversation %v: "%v"\n`, cd.Conversation.ID, b.String())
+	}
+
 	return nil
 }
