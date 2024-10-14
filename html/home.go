@@ -14,7 +14,11 @@ func HomePage(props html.PageProps, cds []model.ConversationDocument) Node {
 	return Page(props,
 		Ol(
 			Map(cds, func(cd model.ConversationDocument) Node {
-				return Li(A(Href("/conversations?id="+cd.Conversation.ID.String()), Text(cd.Conversation.ID.String())))
+				linkText := cd.Conversation.ID.String()
+				if cd.Conversation.Topic != "" {
+					linkText = cd.Conversation.Topic
+				}
+				return Li(A(Href("/conversations?id="+cd.Conversation.ID.String()), Text(linkText)))
 			}),
 		),
 	)

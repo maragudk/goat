@@ -12,11 +12,11 @@ import (
 	goohttp "maragu.dev/goo/http"
 )
 
-type conversationGetter interface {
+type conversationsGetter interface {
 	GetConversationDocuments(ctx context.Context) ([]model.ConversationDocument, error)
 }
 
-func Home(r *goohttp.Router, log *snorkel.Logger, db conversationGetter) {
+func Home(r *goohttp.Router, log *snorkel.Logger, db conversationsGetter) {
 	r.Get("/", func(props goohtml.PageProps) (Node, error) {
 		cds, err := db.GetConversationDocuments(props.Ctx)
 		if err != nil {

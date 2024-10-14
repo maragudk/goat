@@ -18,6 +18,7 @@ func InjectHTTPRouter(log *snorkel.Logger, db *sql.Database) func(*goohttp.Route
 			}))
 
 			Home(r, log, db)
+			Conversation(r, log, db)
 		})
 	}
 }

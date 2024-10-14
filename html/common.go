@@ -42,7 +42,7 @@ func header() g.Node {
 	return Div(Class("bg-secondary shadow text-white"),
 		container(true, false,
 			Div(Class("h-14 flex items-center justify-between"),
-				Img(Src("/images/logo.jpg"), Alt("Logo"), Class("h-12 w-auto")),
+				A(Href("/"), Img(Src("/images/logo.jpg"), Alt("Logo"), Class("h-12 w-auto"))),
 			),
 		),
 	)
