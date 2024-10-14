@@ -22,8 +22,16 @@ Someone saying hello to Avery with "Hello @avery".
 Someone saying hi to John with "Hi @john".
 
 `
+
+	summarizerPrompt = `Summarize the conversation so far.
+
+`
 )
 
 func CreateGlobalPrompt(speakerName string) string {
 	return fmt.Sprintf(globalPrompt, speakerName)
+}
+
+func CreateSummarizerPrompt(speakerName string) string {
+	return CreateGlobalPrompt(speakerName) + summarizerPrompt
 }

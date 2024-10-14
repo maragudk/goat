@@ -221,7 +221,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			})
 
 			var summary strings.Builder
-			if err := summarizer.Prompt(ctx, "Give a short one-sentence summary of the conversation.", messages, &summary); err != nil {
+			if err := summarizer.Prompt(ctx, model.CreateSummarizerPrompt(llmSpeaker.Name), messages, &summary); err != nil {
 				return errors.Wrap(err, "error summarizing conversation")
 			}
 
