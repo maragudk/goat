@@ -23,7 +23,7 @@ Someone saying hi to John with "Hi @john".
 
 `
 
-	summarizerPrompt = `Make a one-sentence summary of the conversation so far.
+	summarizerPrompt = `Make a short one-sentence summary of the conversation so far.
 
 `
 )
