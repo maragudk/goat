@@ -27,7 +27,7 @@ func Page(props html.PageProps, children ...Node) Node {
 				header(),
 				Div(Class("grow"),
 					container(true, true,
-						Div(Class("prose"),
+						Div(Class("prose prose-lg"),
 							Group(children),
 						),
 					),
