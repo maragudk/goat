@@ -209,11 +209,16 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 
 		_, _ = fmt.Fprintln(w)
 
-		if cd.Conversation.Topic == "" && summarizer != nil {
+		if summarizer != nil {
 			messages = append(messages, llm.Message{
 				Content: b.String(),
 				Name:    llmSpeaker.Name,
 				Role:    llm.MessageRoleAssistant,
+			})
+
+			messages = append(messages, llm.Message{
+				Content: "Summarize the above conversation.",
+				Role:    llm.MessageRoleUser,
 			})
 
 			var summary strings.Builder
