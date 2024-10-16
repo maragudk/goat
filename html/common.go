@@ -3,9 +3,9 @@ package html
 import (
 	_ "embed"
 
-	g "github.com/maragudk/gomponents"
-	c "github.com/maragudk/gomponents/components"
-	. "github.com/maragudk/gomponents/html"
+	. "maragu.dev/gomponents"
+	. "maragu.dev/gomponents/components"
+	. "maragu.dev/gomponents/html"
 
 	"maragu.dev/goo/html"
 )
@@ -13,22 +13,22 @@ import (
 //go:embed tailwind.config.js
 var tailwindConfig string
 
-func Page(props html.PageProps, children ...g.Node) g.Node {
-	return c.HTML5(c.HTML5Props{
+func Page(props html.PageProps, children ...Node) Node {
+	return HTML5(HTML5Props{
 		Title:       props.Title,
 		Description: props.Description,
 		Language:    "en",
-		Head: []g.Node{
+		Head: []Node{
 			Script(Src("https://cdn.tailwindcss.com?plugins=forms,typography")),
-			Script(g.Raw(tailwindConfig)),
+			Script(Raw(tailwindConfig)),
 		},
-		Body: []g.Node{Class("bg-secondary font-serif"),
+		Body: []Node{Class("bg-secondary font-serif"),
 			Div(Class("min-h-screen flex flex-col justify-between bg-white"),
 				header(),
 				Div(Class("grow"),
 					container(true, true,
 						Div(Class("prose"),
-							g.Group(children),
+							Group(children),
 						),
 					),
 				),
@@ -38,7 +38,7 @@ func Page(props html.PageProps, children ...g.Node) g.Node {
 	})
 }
 
-func header() g.Node {
+func header() Node {
 	return Div(Class("bg-secondary shadow text-white"),
 		container(true, false,
 			Div(Class("h-14 flex items-center justify-between"),
@@ -48,17 +48,17 @@ func header() g.Node {
 	)
 }
 
-func container(padX, padY bool, children ...g.Node) g.Node {
+func container(padX, padY bool, children ...Node) Node {
 	return Div(
-		c.Classes{
+		Classes{
 			"max-w-7xl mx-auto":     true,
 			"px-4 md:px-8 lg:px-16": padX,
 			"py-4 md:py-8":          padY,
 		},
-		g.Group(children),
+		Group(children),
 	)
 }
 
-func footer() g.Node {
+func footer() Node {
 	return Div(Class("bg-secondary h-8"))
 }

@@ -3,7 +3,7 @@ package http
 import (
 	"context"
 
-	. "github.com/maragudk/gomponents"
+	. "maragu.dev/gomponents"
 	"maragu.dev/snorkel"
 
 	"maragu.dev/goat/html"
