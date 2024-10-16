@@ -303,7 +303,7 @@ func (s *Service) RecomputeTopics(ctx context.Context, out io.Writer) error {
 
 	var client prompter
 	for _, m := range models {
-		if m.Type == model.ModelTypeBrain || (m.Type != model.ModelTypeAnthropic && m.Type != model.ModelTypeOpenAI) {
+		if m.Type != model.ModelTypeOpenAI {
 			continue
 		}
 
