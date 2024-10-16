@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/muesli/termenv"
 	"maragu.dev/errors"
 
 	"maragu.dev/goat/llm"
@@ -71,11 +72,18 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		return errors.Wrap(err, "error getting my speaker")
 	}
 
+	output := termenv.NewOutput(w)
+	w = output
+
 	// If we're continuing a conversation, print the conversation so far
 	if opts.Continue {
 		conversation, err = s.DB.GetLatestConversation(ctx)
 		if err != nil {
 			return errors.Wrap(err, "error getting latest conversation")
+		}
+
+		if conversation.Topic != "" {
+			output.SetWindowTitle(conversation.Topic)
 		}
 
 		cd, err := s.DB.GetConversationDocument(ctx, conversation.ID)
@@ -216,6 +224,8 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			if err := s.DB.SaveTopic(ctx, conversation.ID, summary.String()); err != nil {
 				return errors.Wrap(err, "error saving conversation topic")
 			}
+
+			output.SetWindowTitle(summary.String())
 		}
 
 		if interactive {
