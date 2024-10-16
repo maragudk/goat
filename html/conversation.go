@@ -20,7 +20,8 @@ func ConversationPage(props html.PageProps, cd model.ConversationDocument) Node 
 	props.Title = title
 
 	return Page(props,
-		Div(
+
+		Group{
 			H1(Text(title)),
 
 			Div(Class("space-y-8"),
@@ -46,6 +47,8 @@ func ConversationPage(props html.PageProps, cd model.ConversationDocument) Node 
 					)
 				}),
 			),
-		),
+
+			P(A(Href("/"), Text("Back"))),
+		},
 	)
 }
