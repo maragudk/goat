@@ -23,7 +23,7 @@ Someone saying hi to John with "Hi @john".
 
 `
 
-	summarizerPrompt = `Make a short one-sentence summary of the conversation so far. Do not prefix your answer with "Summary:" or "The conversation", just give the summary.
+	summarizerPrompt = `Make a short one-sentence, high-level summary of the conversation so far. Do not prefix your answer with "Summary:" or "The conversation", just give the summary. Use a maximum of 20 words, preferably less. Be concise.
 
 `
 )
