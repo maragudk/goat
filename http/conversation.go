@@ -4,6 +4,7 @@ import (
 	"context"
 
 	g "maragu.dev/gomponents"
+	hx "maragu.dev/gomponents-htmx/http"
 	"maragu.dev/snorkel"
 
 	"maragu.dev/goat/html"
@@ -24,6 +25,10 @@ func Conversation(r *http.Router, log *snorkel.Logger, db conversationGetter) {
 		if err != nil {
 			log.Event("Error getting conversation document", 1, "error", err)
 			return goohtml.ErrorPage(html.Page), err
+		}
+
+		if hx.IsRequest(props.Req.Header) {
+			return html.TurnsPartial(cd), nil
 		}
 
 		return html.ConversationPage(props, cd), nil

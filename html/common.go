@@ -20,6 +20,7 @@ func Page(props html.PageProps, children ...Node) Node {
 		Language:    "en",
 		Head: []Node{
 			Script(Src("https://cdn.tailwindcss.com?plugins=forms,typography")),
+			Script(Src("https://unpkg.com/htmx.org@2/dist/htmx.min.js")),
 			Script(Raw(tailwindConfig)),
 		},
 		Body: []Node{Class("bg-secondary font-serif"),

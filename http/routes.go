@@ -15,7 +15,8 @@ func InjectHTTPRouter(log *snorkel.Logger, db *sql.Database, public embed.FS) fu
 		// Group for HTML
 		r.Group(func(r *goohttp.Router) {
 			r.Use(httph.ContentSecurityPolicy(func(opts *httph.ContentSecurityPolicyOptions) {
-				opts.ScriptSrc = "'self' 'unsafe-inline' https://cdn.tailwindcss.com"
+				opts.ConnectSrc = "'self'"
+				opts.ScriptSrc = "'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com"
 				opts.StyleSrc = "'self' 'unsafe-inline'"
 			}))
 
