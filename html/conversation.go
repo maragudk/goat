@@ -35,9 +35,14 @@ func ConversationPage(props html.PageProps, cd model.ConversationDocument) Node 
 						content = b.String()
 					}
 
-					return Div(Class("flex space-x-4"),
+					var reverse string
+					if s.ID != model.MySpeakerID {
+						reverse = " flex-row-reverse"
+					}
+
+					return Div(Class("flex"+reverse),
 						P(Title(s.Name), Text(s.Avatar())),
-						Div(Class("border border-gray-50 shadow rounded w-full p-4"), Raw(content)),
+						Div(Class("border border-gray-200 rounded-lg w-full px-4 mx-4"), Raw(content)),
 					)
 				}),
 			),
