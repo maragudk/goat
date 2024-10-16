@@ -6,7 +6,7 @@ tailwind.config = {
         secondary: "#250D1F",
       },
       fontFamily:{
-        'serif': ['Charter', 'ui-serif'],
+        'serif': ['Recoleta', 'ui-serif'],
         'mono': ['MonoLisa', 'ui-monospace'],
       },
     }
