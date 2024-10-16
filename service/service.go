@@ -321,10 +321,6 @@ func (s *Service) RecomputeTopics(ctx context.Context, out io.Writer) error {
 		return errors.Wrap(err, "error getting conversation documents")
 	}
 	for _, cd := range cds {
-		if cd.Conversation.Topic != "" {
-			continue
-		}
-
 		var messages []llm.Message
 		for _, t := range cd.Turns {
 			speaker := cd.Speakers[t.SpeakerID]
