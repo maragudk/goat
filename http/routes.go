@@ -1,6 +1,8 @@
 package http
 
 import (
+	"embed"
+
 	"maragu.dev/httph"
 	"maragu.dev/snorkel"
 
@@ -8,7 +10,7 @@ import (
 	goohttp "maragu.dev/goo/http"
 )
 
-func InjectHTTPRouter(log *snorkel.Logger, db *sql.Database) func(*goohttp.Router) {
+func InjectHTTPRouter(log *snorkel.Logger, db *sql.Database, public embed.FS) func(*goohttp.Router) {
 	return func(r *goohttp.Router) {
 		// Group for HTML
 		r.Group(func(r *goohttp.Router) {
@@ -19,6 +21,7 @@ func InjectHTTPRouter(log *snorkel.Logger, db *sql.Database) func(*goohttp.Route
 
 			Home(r, log, db)
 			Conversation(r, log, db)
+			Embedded(r, public)
 		})
 	}
 }

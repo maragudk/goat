@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"os"
 	"path/filepath"
@@ -11,6 +12,9 @@ import (
 
 	"maragu.dev/goat/service"
 )
+
+//go:embed public
+var public embed.FS
 
 func main() {
 	clir.Run(clir.RunnerFunc(func(ctx clir.Context) error {
@@ -87,7 +91,7 @@ func serve(s *service.Service, dir string) clir.RunnerFunc {
 		if err := os.Setenv("DATABASE_PATH", filepath.Join(dir, "goat.db")); err != nil {
 			return errors.Wrap(err, "error setting DATABASE_PATH")
 		}
-		s.Serve(ctx.Ctx, s.DB, ctx.Err)
+		s.Serve(ctx.Ctx, s.DB, public, ctx.Err)
 		return nil
 	}
 }
