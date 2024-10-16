@@ -36,7 +36,7 @@ func ConversationPage(props html.PageProps, cd model.ConversationDocument) Node 
 					}
 
 					return Div(Class("flex space-x-4"),
-						P(Title(s.Name), Text(s.Avatar)),
+						P(Title(s.Name), Text(s.Avatar())),
 						Div(Class("border border-gray-50 shadow rounded w-full p-4"), Raw(content)),
 					)
 				}),

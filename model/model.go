@@ -72,7 +72,15 @@ type Speaker struct {
 	ModelID ID `db:"modelID"`
 	Name    string
 	System  string
-	Avatar  string
+	Config  string
+}
+
+func (s Speaker) Avatar() string {
+	config := unmarshalConfig(s.Config)
+	if avatar, ok := config["avatar"]; ok {
+		return avatar
+	}
+	return "🤖"
 }
 
 type SpeakerModelPair struct {

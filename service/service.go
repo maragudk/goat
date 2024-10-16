@@ -84,14 +84,14 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		}
 		for _, t := range cd.Turns {
 			s := cd.Speakers[t.SpeakerID]
-			printAvatar(w, s.Avatar)
+			printAvatar(w, s)
 			_, _ = fmt.Fprintln(w, t.Content)
 			printTurnSeparator(w)
 		}
 	}
 
 	if interactive {
-		printAvatar(w, mySpeaker.Avatar)
+		printAvatar(w, mySpeaker)
 	}
 
 	var summarizer prompter
@@ -128,7 +128,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 		if err != nil {
 			if errors.Is(err, model.ErrorSpeakerNotFound) {
 				_, _ = fmt.Fprintf(w, "Error: No speaker called %v.\n\n", name)
-				printAvatar(w, mySpeaker.Avatar)
+				printAvatar(w, mySpeaker)
 				continue
 			}
 			return errors.Wrap(err, "error getting speaker by name")
@@ -180,7 +180,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			})
 		}
 
-		printAvatar(w, llmSpeaker.Avatar)
+		printAvatar(w, llmSpeaker)
 
 		var b strings.Builder
 		multiW := io.MultiWriter(w, &b)
@@ -226,7 +226,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 			break
 		}
 
-		printAvatar(w, mySpeaker.Avatar)
+		printAvatar(w, mySpeaker)
 	}
 	return nil
 }
@@ -249,8 +249,8 @@ func newClientFromModel(m model.Model) prompter {
 	return client
 }
 
-func printAvatar(w io.Writer, avatar string) {
-	_, _ = fmt.Fprint(w, avatar+": ")
+func printAvatar(w io.Writer, s model.Speaker) {
+	_, _ = fmt.Fprint(w, s.Avatar()+": ")
 }
 
 func printTurnSeparator(w io.Writer) {

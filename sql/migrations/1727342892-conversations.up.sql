@@ -38,9 +38,9 @@ create table speakers (
   created text not null default (strftime('%Y-%m-%dT%H:%M:%fZ')),
   updated text not null default (strftime('%Y-%m-%dT%H:%M:%fZ')),
   name text unique not null,
-  avatar text not null default '🤖',
   modelID text not null references models (id),
-  system text not null default ''
+  system text not null default '',
+  config text not null default '{"avatar":"🤖"}'
 ) strict;
 
 create trigger speakers_updated_timestamp after update on speakers begin
@@ -49,15 +49,15 @@ end;
 
 create index speakers_name on speakers (name);
 
-insert into speakers (id, name, avatar, modelID, system) values
-  ('s_26a91be1873f385bb0631ad868bf7c85', 'me', '🧑', 'm_59ff15344d498ee0db983ad592340a81', 'You do you.'),
-  ('s_6a719774ed33fb3cd2b955f7eb36fc50', 'llama1','🦙', 'm_50981744360a6e19c18b053f53cc7301', ''),
-  ('s_7136eef88ec2628462b9b28c30327421', 'llama3', '🦙', 'm_bff0168b18e50745baed4d02a24d4b66', ''),
-  ('s_60cdf7c9203bfb3ab62d9000ea8005e1', 'llama8', '🦙', 'm_32cba90058abc8856ee083461f859be4', ''),
-  ('s_73763b5713a13b77cecf50c63066b3c5', 'llama', '🦙', 'm_908680bfa1a690fe805070534cc73bed', ''),
-  ('s_196169d1616d094959b1f21212da6066', 'gpt', '🤖', 'm_7c063c75af9370705f165f4daf700f60', ''),
-  ('s_0f2981f8f63af40eae0042502f8fbef4', 'claude', '🧑‍🎨', 'm_b2ac6559f08edb63d5db48231a7d7aae', ''),
-  ('s_b7b078c33569f1a1a7c393559a018981', 'gemma2', '🦠', 'm_7f439ec1580fcc145e388f117dc0897a', '');
+insert into speakers (id, name, config, modelID, system) values
+  ('s_26a91be1873f385bb0631ad868bf7c85', 'me', '{"avatar":"🧑"}', 'm_59ff15344d498ee0db983ad592340a81', 'You do you.'),
+  ('s_6a719774ed33fb3cd2b955f7eb36fc50', 'llama1','{"avatar":"🦙"}', 'm_50981744360a6e19c18b053f53cc7301', ''),
+  ('s_7136eef88ec2628462b9b28c30327421', 'llama3', '{"avatar":"🦙"}', 'm_bff0168b18e50745baed4d02a24d4b66', ''),
+  ('s_60cdf7c9203bfb3ab62d9000ea8005e1', 'llama8', '{"avatar":"🦙"}', 'm_32cba90058abc8856ee083461f859be4', ''),
+  ('s_73763b5713a13b77cecf50c63066b3c5', 'llama', '{"avatar":"🦙"}', 'm_908680bfa1a690fe805070534cc73bed', ''),
+  ('s_196169d1616d094959b1f21212da6066', 'gpt', '{"avatar":"🤖"}', 'm_7c063c75af9370705f165f4daf700f60', ''),
+  ('s_0f2981f8f63af40eae0042502f8fbef4', 'claude', '{"avatar":"🧑"}‍🎨', 'm_b2ac6559f08edb63d5db48231a7d7aae', ''),
+  ('s_b7b078c33569f1a1a7c393559a018981', 'gemma2', '{"avatar":"🦠"}', 'm_7f439ec1580fcc145e388f117dc0897a', '');
 
 -- conversations have optional topics and tie turns together.
 create table conversations (
