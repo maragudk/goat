@@ -56,20 +56,20 @@ func main() {
 
 		r := clir.NewRouter()
 
-		r.Route("", root(s, opts))
+		r.Route("", start(s, opts))
 
 		r.Branch("models", func(r *clir.Router) {
-			r.Route("", models(s))
-			r.Route("list", models(s))
+			r.RouteFunc("", s.PrintModels)
+			r.RouteFunc("list", s.PrintModels)
 		})
 
 		r.Branch("speakers", func(r *clir.Router) {
-			r.Route("", speakers(s))
-			r.Route("list", speakers(s))
+			r.RouteFunc("", s.PrintSpeakers)
+			r.RouteFunc("list", s.PrintSpeakers)
 		})
 
-		r.Branch("topics", func(r *clir.Router) {
-			r.Route("recompute", recomputeTopics(s))
+		r.Branch("conversations", func(r *clir.Router) {
+			r.RouteFunc("recompute-topics", s.RecomputeTopics)
 		})
 
 		r.Route("serve", serve(s, dir))
@@ -80,9 +80,9 @@ func main() {
 	}))
 }
 
-func recomputeTopics(s *service.Service) clir.RunnerFunc {
+func start(s *service.Service, opts service.StartOptions) clir.RunnerFunc {
 	return func(ctx clir.Context) error {
-		return s.RecomputeTopics(ctx.Ctx, ctx.Out)
+		return s.Start(ctx.Ctx, ctx.In, ctx.Out, opts)
 	}
 }
 
@@ -93,23 +93,5 @@ func serve(s *service.Service, dir string) clir.RunnerFunc {
 		}
 		s.Serve(ctx.Ctx, s.DB, public, ctx.Err)
 		return nil
-	}
-}
-
-func root(s *service.Service, opts service.StartOptions) clir.RunnerFunc {
-	return func(ctx clir.Context) error {
-		return s.Start(ctx.Ctx, ctx.In, ctx.Out, opts)
-	}
-}
-
-func models(s *service.Service) clir.RunnerFunc {
-	return func(ctx clir.Context) error {
-		return s.PrintModels(ctx.Ctx, ctx.Out)
-	}
-}
-
-func speakers(s *service.Service) clir.RunnerFunc {
-	return func(ctx clir.Context) error {
-		return s.PrintSpeakers(ctx.Ctx, ctx.Out)
 	}
 }

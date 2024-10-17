@@ -274,31 +274,6 @@ func printTurnSeparator(w io.Writer) {
 	_, _ = fmt.Fprintln(w)
 }
 
-func (s *Service) PrintModels(ctx context.Context, w io.Writer) error {
-	models, err := s.DB.GetModels(ctx)
-	if err != nil {
-		return errors.Wrap(err, "error getting models")
-	}
-	for _, m := range models {
-		_, _ = fmt.Fprintf(w, "- %v (%v)\n", m.Name, m.Type)
-	}
-	return nil
-}
-
-func (s *Service) PrintSpeakers(ctx context.Context, out io.Writer) error {
-	speakers, err := s.DB.GetSpeakers(ctx)
-	if err != nil {
-		return errors.Wrap(err, "error getting speakers")
-	}
-	for _, s := range speakers {
-		_, _ = fmt.Fprintf(out, "- %v (%v)\n", s.Name, s.ModelName)
-		if s.System != "" {
-			_, _ = fmt.Fprintf(out, "  system: \"%v\"\n", s.System)
-		}
-	}
-	return nil
-}
-
 func (s *Service) ConnectAndMigrate(ctx context.Context) error {
 	if err := s.DB.Connect(); err != nil {
 		return errors.Wrap(err, "error connecting to database")
@@ -307,57 +282,5 @@ func (s *Service) ConnectAndMigrate(ctx context.Context) error {
 	if err := s.DB.MigrateUp(ctx); err != nil {
 		return errors.Wrap(err, "error migrating database")
 	}
-	return nil
-}
-
-func (s *Service) RecomputeTopics(ctx context.Context, out io.Writer) error {
-	models, err := s.DB.GetModels(ctx)
-	if err != nil {
-		return errors.Wrap(err, "error getting models")
-	}
-
-	var client prompter
-	for _, m := range models {
-		if m.Type != model.ModelTypeOpenAI {
-			continue
-		}
-
-		_, _ = fmt.Fprintln(out, "Using model:", m.Name)
-		client = newClientFromModel(m)
-		break
-	}
-
-	if client == nil {
-		return errors.New("no models available to recompute topics")
-	}
-
-	cds, err := s.DB.GetConversationDocuments(ctx)
-	if err != nil {
-		return errors.Wrap(err, "error getting conversation documents")
-	}
-	for _, cd := range cds {
-		var messages []llm.Message
-		for _, t := range cd.Turns {
-			speaker := cd.Speakers[t.SpeakerID]
-
-			messages = append(messages, llm.Message{
-				Content: speaker.Name + ": " + t.Content,
-				Name:    speaker.Name,
-				Role:    llm.MessageRoleUser,
-			})
-		}
-
-		var b strings.Builder
-		if err := client.Prompt(ctx, model.CreateSummarizerPrompt("Summarizer"), messages, &b); err != nil {
-			return errors.Wrap(err, "error summarizing conversation")
-		}
-
-		if err := s.DB.SaveTopic(ctx, cd.Conversation.ID, b.String()); err != nil {
-			return errors.Wrap(err, "error saving conversation topic")
-		}
-
-		_, _ = fmt.Fprintf(out, `Recomputed topic for conversation %v: "%v"\n`, cd.Conversation.ID, b.String())
-	}
-
 	return nil
 }
