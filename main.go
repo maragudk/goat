@@ -69,6 +69,8 @@ func main() {
 		})
 
 		r.Branch("conversations", func(r *clir.Router) {
+			r.RouteFunc("", s.PrintConversations)
+			r.RouteFunc("list", s.PrintConversations)
 			r.RouteFunc("recompute-topics", s.RecomputeTopics)
 		})
 

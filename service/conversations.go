@@ -11,6 +11,17 @@ import (
 	"maragu.dev/goat/model"
 )
 
+func (s *Service) PrintConversations(ctx clir.Context) error {
+	cds, err := s.DB.GetConversationDocuments(ctx.Ctx)
+	if err != nil {
+		return errors.Wrap(err, "error getting conversation documents")
+	}
+	for _, cd := range cds {
+		ctx.Printfln("- %v, topic: %v", cd.Conversation.ID, cd.Conversation.Topic)
+	}
+	return nil
+}
+
 func (s *Service) RecomputeTopics(ctx clir.Context) error {
 	out := ctx.Out
 
