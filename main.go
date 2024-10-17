@@ -80,6 +80,9 @@ func main() {
 			if err := os.Setenv("DATABASE_PATH", filepath.Join(dir, "goat.db")); err != nil {
 				return errors.Wrap(err, "error setting DATABASE_PATH")
 			}
+			if err := os.Setenv("SERVER_ADDRESS", ":9090"); err != nil {
+				return errors.Wrap(err, "error setting SERVER_ADDRESS")
+			}
 			s.Serve(ctx.Ctx, s.DB, public, ctx.Err)
 			return nil
 		})

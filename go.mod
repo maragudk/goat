@@ -14,7 +14,7 @@ require (
 	maragu.dev/errors v0.3.0
 	maragu.dev/gomponents v1.0.0
 	maragu.dev/gomponents-htmx v0.6.1
-	maragu.dev/goo v0.0.0-20241015113535-c4c8dbceae2a
+	maragu.dev/goo v0.0.0-20241017084837-7e8a4fbbb346
 	maragu.dev/httph v0.3.1
 	maragu.dev/is v0.2.0
 	maragu.dev/migrate v0.6.0

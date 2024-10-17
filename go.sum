@@ -88,8 +88,8 @@ maragu.dev/gomponents-heroicons/v3 v3.0.0 h1:QBw4CSST12mrdcYzl1XrEnbMxfhvQgnVunh
 maragu.dev/gomponents-heroicons/v3 v3.0.0/go.mod h1:Rqc5BhSQUHBnGuWEPihg+IsQnOkiBY+Ibu1DDGEarsY=
 maragu.dev/gomponents-htmx v0.6.1 h1:vXXOkvqEDKYxSwD1UwqmVp12YwFSuM6u8lsRn7Evyng=
 maragu.dev/gomponents-htmx v0.6.1/go.mod h1:51nXX+dTGff3usM7AJvbeOcQjzjpSycod+60CYeEP/M=
-maragu.dev/goo v0.0.0-20241015113535-c4c8dbceae2a h1:dMzM8TmsOZJn7v+HHJPnOsKXG5ZJmwQ7YF5xOcmISUE=
-maragu.dev/goo v0.0.0-20241015113535-c4c8dbceae2a/go.mod h1:KRO2mqYZ2d9onuLWLrS6cye9vmlVGr2zLKWlSFs9H8Y=
+maragu.dev/goo v0.0.0-20241017084837-7e8a4fbbb346 h1:u+OV8gGvBNPWMDYdqUEN24dNKFld6biuvHjcGhi2QL0=
+maragu.dev/goo v0.0.0-20241017084837-7e8a4fbbb346/go.mod h1:KRO2mqYZ2d9onuLWLrS6cye9vmlVGr2zLKWlSFs9H8Y=
 maragu.dev/httph v0.3.1 h1:WV/SRaJXYKtcOLQscPqKWqAcXtC/o2eqxVr1NsZ8sfE=
 maragu.dev/httph v0.3.1/go.mod h1:EaoadbqczoICEGrtKrtlb1KD6gj6m65en3Wt2OchlJ0=
 maragu.dev/is v0.2.0 h1:poeuVEA5GG3vrDpGmzo2KjWtIMZmqUyvGnOB0/pemig=
