@@ -3,7 +3,7 @@ module maragu.dev/goat
 go 1.23
 
 require (
-	github.com/anthropics/anthropic-sdk-go v0.1.0-alpha.2
+	github.com/anthropics/anthropic-sdk-go v0.2.0-alpha.3
 	github.com/maragudk/is v0.1.0
 	github.com/mattn/go-sqlite3 v1.14.23
 	github.com/muesli/termenv v0.15.2

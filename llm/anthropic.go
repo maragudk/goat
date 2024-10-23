@@ -12,7 +12,7 @@ import (
 
 const (
 	ModelClaude_3_Haiku    = Model(anthropic.ModelClaude_3_Haiku_20240307)
-	ModelClaude_3_5_Sonnet = Model(anthropic.ModelClaude_3_5_Sonnet_20240620)
+	ModelClaude_3_5_Sonnet = Model(anthropic.ModelClaude3_5SonnetLatest)
 )
 
 type AnthropicClient struct {
