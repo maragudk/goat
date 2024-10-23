@@ -65,7 +65,7 @@ func (c *AnthropicClient) Prompt(ctx context.Context, system string, messages []
 	params := anthropic.MessageNewParams{
 		MaxTokens: anthropic.Int(4096),
 		Messages:  anthropic.F(mps),
-		Model:     anthropic.F(anthropic.ModelClaude_3_5_Sonnet_20240620),
+		Model:     anthropic.F(c.model.String()),
 	}
 	if system != "" {
 		params.System = anthropic.F([]anthropic.TextBlockParam{anthropic.NewTextBlock(system)})
