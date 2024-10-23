@@ -62,7 +62,7 @@ func (c *GoogleClient) Prompt(ctx context.Context, system string, messages []Mes
 			role = "model"
 		}
 		history = append(history, &genai.Content{
-			Parts: []genai.Part{genai.Text(m.Name + ": " + m.Content)},
+			Parts: []genai.Part{genai.Text(m.Content)},
 			Role:  role,
 		})
 		if i == len(messages)-2 {
@@ -72,7 +72,7 @@ func (c *GoogleClient) Prompt(ctx context.Context, system string, messages []Mes
 	cs.History = history
 
 	m := messages[len(messages)-1]
-	content := genai.Text(m.Name + ": " + m.Content)
+	content := genai.Text(m.Content)
 	iter := cs.SendMessageStream(ctx, content)
 	for {
 		res, err := iter.Next()
