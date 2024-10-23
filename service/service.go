@@ -11,11 +11,10 @@ import (
 
 	"github.com/muesli/termenv"
 	"maragu.dev/errors"
+	goosql "maragu.dev/goo/sql"
 
 	"maragu.dev/goat/llm"
 	"maragu.dev/goat/model"
-	goosql "maragu.dev/goo/sql"
-
 	"maragu.dev/goat/sql"
 )
 
@@ -249,7 +248,7 @@ func (s *Service) Start(ctx context.Context, r io.Reader, w io.Writer, opts Star
 func newClientFromModel(m model.Model) prompter {
 	var client prompter
 	switch m.Type {
-	case model.ModelTypeLlamaCPP, model.ModelTypeOpenAI, model.ModelTypeGroq, model.ModelTypeHuggingFace:
+	case model.ModelTypeLlamaCPP, model.ModelTypeOpenAI, model.ModelTypeGroq, model.ModelTypeHuggingFace, model.ModelTypeFireworks:
 		client = llm.NewOpenAIClient(llm.NewOpenAIClientOptions{
 			BaseURL: m.URL(),
 			Model:   llm.Model(m.Name),
@@ -260,6 +259,8 @@ func newClientFromModel(m model.Model) prompter {
 			Model: llm.Model(m.Name),
 			Token: m.Token(),
 		})
+	default:
+		panic("cannot create client, unsupported model type " + m.Type)
 	}
 	return client
 }

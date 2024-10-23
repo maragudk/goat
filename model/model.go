@@ -24,6 +24,7 @@ const (
 	ModelTypeAnthropic   = ModelType("anthropic")
 	ModelTypeGroq        = ModelType("groq")
 	ModelTypeHuggingFace = ModelType("huggingface")
+	ModelTypeFireworks   = ModelType("fireworks")
 )
 
 type Model struct {
@@ -47,6 +48,8 @@ func (m Model) URL() string {
 		return ""
 	case ModelTypeHuggingFace:
 		return "https://api-inference.huggingface.co/models/" + m.Name + "/v1"
+	case ModelTypeFireworks:
+		return "https://api.fireworks.ai/inference/v1"
 	default:
 		panic("unsupported model type")
 	}
@@ -58,7 +61,7 @@ func (m Model) Token() string {
 	switch m.Type {
 	case ModelTypeLlamaCPP:
 		return ""
-	case ModelTypeOpenAI, ModelTypeGroq, ModelTypeAnthropic, ModelTypeHuggingFace:
+	case ModelTypeOpenAI, ModelTypeGroq, ModelTypeAnthropic, ModelTypeHuggingFace, ModelTypeFireworks:
 		return config["token"]
 	default:
 		panic("unsupported model type")
