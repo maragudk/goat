@@ -259,6 +259,11 @@ func newClientFromModel(m model.Model) prompter {
 			Model: llm.Model(m.Name),
 			Token: m.Token(),
 		})
+	case model.ModelTypeGoogle:
+		client = llm.NewGoogleClient(llm.NewGoogleClientOptions{
+			Model: llm.Model(m.Name),
+			Token: m.Token(),
+		})
 	default:
 		panic("cannot create client, unsupported model type " + m.Type)
 	}
