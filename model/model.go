@@ -25,6 +25,7 @@ const (
 	ModelTypeGroq        = ModelType("groq")
 	ModelTypeHuggingFace = ModelType("huggingface")
 	ModelTypeFireworks   = ModelType("fireworks")
+	ModelTypeGoogle      = ModelType("google")
 )
 
 type Model struct {
@@ -44,7 +45,7 @@ func (m Model) URL() string {
 		return fmt.Sprintf("http://%v/v1", config["address"])
 	case ModelTypeGroq:
 		return "https://api.groq.com/openai/v1"
-	case ModelTypeOpenAI, ModelTypeAnthropic:
+	case ModelTypeOpenAI, ModelTypeAnthropic, ModelTypeGoogle:
 		return ""
 	case ModelTypeHuggingFace:
 		return "https://api-inference.huggingface.co/models/" + m.Name + "/v1"
@@ -61,7 +62,7 @@ func (m Model) Token() string {
 	switch m.Type {
 	case ModelTypeLlamaCPP:
 		return ""
-	case ModelTypeOpenAI, ModelTypeGroq, ModelTypeAnthropic, ModelTypeHuggingFace, ModelTypeFireworks:
+	case ModelTypeOpenAI, ModelTypeGroq, ModelTypeAnthropic, ModelTypeHuggingFace, ModelTypeFireworks, ModelTypeGoogle:
 		return config["token"]
 	default:
 		panic("unsupported model type")

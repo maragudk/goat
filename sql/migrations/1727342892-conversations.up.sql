@@ -3,7 +3,8 @@ create table model_types (
   v text primary key
 ) strict;
 
-insert into model_types (v) values ('brain'), ('llamacpp'), ('openai'), ('anthropic'), ('groq'), ('huggingface');
+insert into model_types (v) values ('brain'), ('llamacpp'), ('openai'), ('anthropic'), ('groq'),
+                                   ('huggingface'), ('fireworks'), ('google');
 
 -- models are llms.
 -- They have names (how they're identified) and types (how they're communicated with),
