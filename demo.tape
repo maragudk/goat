@@ -59,14 +59,21 @@ Set BorderRadius 10
 Set Theme "Dracula"
 
 Type "goat" Sleep 500ms Enter
-Type "Hey @claude, how is it going?" Sleep 1s Enter
+
+Sleep 500ms
+
+Type "What's up @llama, knitting any sweaters lately?" Sleep 1s Enter
 
 Sleep 5s
 
-Type "@gpt what about you?" Sleep 1s Enter
+Type "@gpt how is it going?" Sleep 1s Enter
 
 Sleep 5s
 
-Type "@llama knitting any sweaters lately?" Sleep 1s Enter
+Type "@gemini and you?" Sleep 1s Enter
+
+Sleep 5s
+
+Type "Hey @claude, what about you?" Sleep 1s Enter
 
 Sleep 15s

@@ -15,9 +15,11 @@ go install maragu.dev/goat@latest
 ```
 
 Supported LLMs:
-- Llama via [llama.cpp](https://github.com/ggerganov/llama.cpp)
+- Local models via [llama.cpp](https://github.com/ggerganov/llama.cpp)
 - Models from [OpenAI](https://openai.com)
 - Models from [Anthropic](https://www.anthropic.com)
+- Models from [Google](https://aistudio.google.com)
+- Models from [Fireworks](https://fireworks.ai)
 - Models from [Groq](https://groq.com)
 - Models from [HuggingFace](https://huggingface.co)
 
