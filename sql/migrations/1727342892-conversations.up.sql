@@ -48,8 +48,6 @@ create trigger speakers_updated_timestamp after update on speakers begin
   update speakers set updated = strftime('%Y-%m-%dT%H:%M:%fZ') where id = old.id;
 end;
 
-create index speakers_name on speakers (name);
-
 insert into speakers (id, name, config, modelID, system) values
   ('s_26a91be1873f385bb0631ad868bf7c85', 'me', '{"avatar":"🧑"}', 'm_59ff15344d498ee0db983ad592340a81', 'You do you.'),
   ('s_6a719774ed33fb3cd2b955f7eb36fc50', 'llama1','{"avatar":"🦙"}', 'm_50981744360a6e19c18b053f53cc7301', ''),
