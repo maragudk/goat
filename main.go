@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"maragu.dev/clir"
+	"maragu.dev/clir/middleware"
 	"maragu.dev/env"
 	"maragu.dev/errors"
 
@@ -40,23 +41,20 @@ func main() {
 			return err
 		}
 
-		// TODO move the flags inside the route once the router supports it
-		flagSet := flag.NewFlagSet("goat", flag.ExitOnError)
-		flagSet.SetOutput(ctx.Err)
-
-		continueFlag := flagSet.Bool("c", false, "continue conversation")
-		promptFlag := flagSet.String("p", "", "use a one-off prompt instead of chatting")
-
-		_ = flagSet.Parse(ctx.Args)
-
-		opts := service.StartOptions{
-			Continue: *continueFlag,
-			Prompt:   *promptFlag,
-		}
-
 		r := clir.NewRouter()
 
+		var continueFlag *bool
+		var promptFlag *string
+		r.Use(middleware.Flags(func(fs *flag.FlagSet) {
+			continueFlag = fs.Bool("c", false, "continue conversation")
+			promptFlag = fs.String("p", "", "use a one-off prompt instead of chatting")
+		}))
+
 		r.RouteFunc("", func(ctx clir.Context) error {
+			opts := service.StartOptions{
+				Continue: *continueFlag,
+				Prompt:   *promptFlag,
+			}
 			return s.Start(ctx.Ctx, ctx.In, ctx.Out, opts)
 		})
 
@@ -86,8 +84,6 @@ func main() {
 			s.Serve(ctx.Ctx, s.DB, public, ctx.Err)
 			return nil
 		})
-
-		ctx.Args = flagSet.Args()
 
 		return r.Run(ctx)
 	}))

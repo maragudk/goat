@@ -11,7 +11,7 @@ require (
 	github.com/sashabaranov/go-openai v1.30.3
 	github.com/yuin/goldmark v1.7.6
 	google.golang.org/api v0.203.0
-	maragu.dev/clir v0.0.0-20241009111049-9c996d91642e
+	maragu.dev/clir v0.0.0-20241025091352-39523fc962f9
 	maragu.dev/env v0.2.0
 	maragu.dev/errors v0.3.0
 	maragu.dev/gomponents v1.0.0
