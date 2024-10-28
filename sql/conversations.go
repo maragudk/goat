@@ -6,9 +6,9 @@ import (
 
 	"github.com/mattn/go-sqlite3"
 	"maragu.dev/errors"
+	goosql "maragu.dev/goo/sql"
 
 	"maragu.dev/goat/model"
-	goosql "maragu.dev/goo/sql"
 )
 
 func (d *Database) NewConversation(ctx context.Context) (model.Conversation, error) {
@@ -152,6 +152,10 @@ func (d *Database) GetModels(ctx context.Context) ([]model.Model, error) {
 	var ms []model.Model
 	err := d.h.Select(ctx, &ms, "select * from models order by name")
 	return ms, err
+}
+
+func (d *Database) SaveModel(ctx context.Context, m model.Model) error {
+	return d.h.Exec(ctx, "insert into models (name, type, config) values (?, ?, ?)", m.Name, m.Type, m.Config)
 }
 
 func isForeignKeyConstraintError(err error, column string) bool {

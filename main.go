@@ -43,24 +43,38 @@ func main() {
 
 		r := clir.NewRouter()
 
-		var continueFlag *bool
-		var promptFlag *string
+		var opts service.StartOptions
 		r.Use(middleware.Flags(func(fs *flag.FlagSet) {
-			continueFlag = fs.Bool("c", false, "continue conversation")
-			promptFlag = fs.String("p", "", "use a one-off prompt instead of chatting")
+			fs.BoolVar(&opts.Continue, "c", false, "continue conversation")
+			fs.StringVar(&opts.Prompt, "p", "", "use a one-off prompt instead of chatting")
 		}))
 
 		r.RouteFunc("", func(ctx clir.Context) error {
-			opts := service.StartOptions{
-				Continue: *continueFlag,
-				Prompt:   *promptFlag,
-			}
 			return s.Start(ctx.Ctx, ctx.In, ctx.Out, opts)
 		})
 
 		r.Branch("models", func(r *clir.Router) {
 			r.RouteFunc("", s.PrintModels)
 			r.RouteFunc("list", s.PrintModels)
+
+			r.Branch("add", func(r *clir.Router) {
+				var token, address string
+
+				r.Use(middleware.Flags(func(fs *flag.FlagSet) {
+					fs.Usage = func() {
+						ctx.Errorln("Usage: goat models add -token <token> -address <address> <model name>:<model type>")
+					}
+					fs.StringVar(&token, "token", "", "model auth token")
+					fs.StringVar(&address, "address", "", "model HTTP address")
+				}))
+
+				r.RouteFunc(`(\w+):(\w+)`, func(ctx clir.Context) error {
+					modelName := ctx.Matches[1]
+					modelType := ctx.Matches[2]
+					ctx.Println("Adding model", modelName, "of type", modelType, "with token", token, "and address", address)
+					return s.AddModel(ctx, modelName, modelType, token, address)
+				})
+			})
 		})
 
 		r.Branch("speakers", func(r *clir.Router) {
