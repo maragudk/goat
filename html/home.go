@@ -4,21 +4,22 @@ import (
 	. "maragu.dev/gomponents"
 	. "maragu.dev/gomponents/html"
 
-	"maragu.dev/goat/model"
 	"maragu.dev/goo/html"
+
+	"maragu.dev/goat/model"
 )
 
-func HomePage(props html.PageProps, cds []model.ConversationDocument) Node {
+func HomePage(props html.PageProps, cs []model.Conversation) Node {
 	props.Title = "goat"
 
 	return Page(props,
 		Ol(
-			Map(cds, func(cd model.ConversationDocument) Node {
-				linkText := cd.Conversation.ID.String()
-				if cd.Conversation.Topic != "" {
-					linkText = cd.Conversation.Topic
+			Map(cs, func(c model.Conversation) Node {
+				linkText := c.ID.String()
+				if c.Topic != "" {
+					linkText = c.Topic
 				}
-				return Li(A(Href("/conversations?id="+cd.Conversation.ID.String()), Text(linkText)))
+				return Li(A(Href("/conversations?id="+c.ID.String()), Text(linkText)))
 			}),
 		),
 	)

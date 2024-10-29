@@ -6,24 +6,25 @@ import (
 	. "maragu.dev/gomponents"
 	"maragu.dev/snorkel"
 
-	"maragu.dev/goat/html"
-	"maragu.dev/goat/model"
 	goohtml "maragu.dev/goo/html"
 	goohttp "maragu.dev/goo/http"
+
+	"maragu.dev/goat/html"
+	"maragu.dev/goat/model"
 )
 
 type conversationsGetter interface {
-	GetConversationDocuments(ctx context.Context) ([]model.ConversationDocument, error)
+	GetConversations(ctx context.Context) ([]model.Conversation, error)
 }
 
 func Home(r *goohttp.Router, log *snorkel.Logger, db conversationsGetter) {
 	r.Get("/", func(props goohtml.PageProps) (Node, error) {
-		cds, err := db.GetConversationDocuments(props.Ctx)
+		cs, err := db.GetConversations(props.Ctx)
 		if err != nil {
-			log.Event("Error getting conversation documents", 1, "error", err)
+			log.Event("Error getting conversations", 1, "error", err)
 			return goohtml.ErrorPage(html.Page), err
 		}
 
-		return html.HomePage(props, cds), nil
+		return html.HomePage(props, cs), nil
 	})
 }
